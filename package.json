@@ -1,0 +1,37 @@
+{
+  "name": "fastify-basic-auth",
+  "version": "0.1.0",
+  "description": "Fastify basic auth plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && tap test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/fastify-basic-auth.git"
+  },
+  "keywords": [
+    "fastify",
+    "basic",
+    "auth",
+    "authentication",
+    "plugin"
+  ],
+  "author": "Tomas Della Vedova - @delvedor (http://delved.org)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fastify/fastify-basic-auth/issues"
+  },
+  "homepage": "https://github.com/fastify/fastify-basic-auth#readme",
+  "devDependencies": {
+    "fastify": "^1.5.0",
+    "fastify-auth": "^0.2.0",
+    "standard": "^11.0.1",
+    "tap": "^12.0.1"
+  },
+  "dependencies": {
+    "basic-auth": "^2.0.0",
+    "fast-json-stringify": "^1.5.3",
+    "fastify-plugin": "^1.0.1"
+  }
+}
