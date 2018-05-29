@@ -16,7 +16,7 @@ This plugin decorates the fastifyinstance with a `basicAuth` function, which you
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-basic-auth'), { validate })
-function validate (username, password, req, res, done) {
+function validate (username, password, req, reply, done) {
   if (username === 'Tyrion' && password === 'wine') {
     done()
   } else {
@@ -38,7 +38,7 @@ Promises and *async/await* are supported as well!
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-basic-auth'), { validate })
-async function validate (username, password, req, res) {
+async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
   }
@@ -50,7 +50,7 @@ Use with `beforeHander`:
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-basic-auth'), { validate, disableHook: true })
-async function validate (username, password, req, res) {
+async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
   }
@@ -74,16 +74,20 @@ const fastify = require('fastify')()
 
 fastify.register(require('fastify-auth'))
 fastify.register(require('fastify-basic-auth'), { validate, disableHook: true })
-async function validate (username, password, req, res) {
+async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
   }
 }
 
 fastify.after(() => {
+  // use preHandler to authenticate all the routes
+  fastify.addHook('preHandler', fastify.auth([fastify.basicAuth]))
+
   fastify.route({
     method: 'GET',
     url: '/',
+    // use beforeHanderto authenticatejust this one
     beforeHandler: fastify.auth([fastify.basicAuth]),
     handler: async (req, reply) => {
       return { hello: 'world' }
