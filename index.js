@@ -16,7 +16,7 @@ function basicPlugin (fastify, opts, next) {
   function basicAuth (req, reply, next) {
     var credentials = auth(req)
     if (credentials == null) {
-      done(new Error('Access denied'))
+      done(new Error('Missing or bad formatted authorization header'))
     } else {
       var result = validate(credentials.name, credentials.pass, req, reply, done)
       if (result && typeof result.then === 'function') {

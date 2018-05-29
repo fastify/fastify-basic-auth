@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "basic-auth": "^2.0.0",
-    "fast-json-stringify": "^1.5.3",
     "fastify-plugin": "^1.0.1"
   }
 }
