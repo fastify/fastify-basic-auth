@@ -339,6 +339,45 @@ test('Missing header', t => {
   })
 })
 
+test('Fastify context', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.decorate('test', true)
+  fastify.register(basicAuth, { validate })
+
+  function validate (username, password, req, res, done) {
+    t.ok(this.test)
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      beforeHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
 function basicAuthHeader (username, password) {
   return 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64')
 }
