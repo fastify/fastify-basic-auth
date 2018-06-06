@@ -10,12 +10,13 @@
 npm i fastify-basic-auth
 ```
 ## Usage
-This plugin decorates the fastifyinstance with a `basicAuth` function, which you can use inside a `preHandler` hook, in a `beforeHander` or with [`fastify-auth`](https://github.com/fastify/fastify-auth).
+This plugin decorates the fastify instance with a `basicAuth` function, which you can use inside a `preHandler` hook, in a `beforeHander` or with [`fastify-auth`](https://github.com/fastify/fastify-auth).
 
 ```js
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-basic-auth'), { validate })
+// `this` inside validate is `fastify`
 function validate (username, password, req, reply, done) {
   if (username === 'Tyrion' && password === 'wine') {
     done()
