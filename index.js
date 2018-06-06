@@ -8,7 +8,7 @@ function basicPlugin (fastify, opts, next) {
     return next(new Error('Basic Auth: Missing validate function'))
   }
 
-  const validate = opts.validate
+  const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)
 
   next()
