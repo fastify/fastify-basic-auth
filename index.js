@@ -7,13 +7,16 @@ function basicPlugin (fastify, opts, next) {
   if (typeof opts.validate !== 'function') {
     return next(new Error('Basic Auth: Missing validate function'))
   }
-
+  const authenticateHeader = getAuthenticateHeader(opts.authenticate)
   const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)
 
   next()
 
   function basicAuth (req, reply, next) {
+    if (authenticateHeader) {
+      reply.header(authenticateHeader.key, authenticateHeader.value)
+    }
     var credentials = auth(req)
     if (credentials == null) {
       done(new Error('Missing or bad formatted authorization header'))
@@ -33,6 +36,27 @@ function basicPlugin (fastify, opts, next) {
       }
     }
   }
+}
+
+function getAuthenticateHeader (authenticate) {
+  if (!authenticate) return false
+  if (authenticate === true) {
+    return {
+      key: 'WWW-Authenticate',
+      value: 'Basic'
+    }
+  }
+  if (typeof authenticate === 'object') {
+    const realm = (authenticate.realm && typeof authenticate.realm === 'string')
+      ? authenticate.realm
+      : ''
+    return {
+      key: 'WWW-Authenticate',
+      value: 'Basic' + (realm ? ` realm="${realm}"` : '')
+    }
+  }
+
+  throw Error('Basic Auth: Invalid authenticate option')
 }
 
 module.exports = fp(basicPlugin, {
