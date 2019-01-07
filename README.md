@@ -46,7 +46,7 @@ async function validate (username, password, req, reply) {
 }
 ```
 
-Use with `beforeHandler`:
+Use with ``preHandler``:
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
@@ -61,7 +61,7 @@ fastify.after(() => {
   fastify.route({
     method: 'GET',
     url: '/',
-    beforeHandler: fastify.basicAuth,
+    `preHandler`: fastify.basicAuth,
     handler: async (req, reply) => {
       return { hello: 'world' }
     }
@@ -89,7 +89,7 @@ fastify.after(() => {
     method: 'GET',
     url: '/',
     // use beforeHanderto authenticatejust this one
-    beforeHandler: fastify.auth([fastify.basicAuth]),
+    `preHandler`: fastify.auth([fastify.basicAuth]),
     handler: async (req, reply) => {
       return { hello: 'world' }
     }
