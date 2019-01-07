@@ -46,7 +46,7 @@ async function validate (username, password, req, reply) {
 }
 ```
 
-Use with ``preHandler``:
+Use with `preHandler`:
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
