@@ -61,7 +61,7 @@ fastify.after(() => {
   fastify.route({
     method: 'GET',
     url: '/',
-    `preHandler`: fastify.basicAuth,
+    preHandler: fastify.basicAuth,
     handler: async (req, reply) => {
       return { hello: 'world' }
     }
@@ -89,7 +89,7 @@ fastify.after(() => {
     method: 'GET',
     url: '/',
     // use beforeHanderto authenticatejust this one
-    `preHandler`: fastify.auth([fastify.basicAuth]),
+    preHandler: fastify.auth([fastify.basicAuth]),
     handler: async (req, reply) => {
       return { hello: 'world' }
     }
