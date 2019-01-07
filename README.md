@@ -50,7 +50,7 @@ Use with `beforeHandler`:
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
-fastify.register(require('fastify-basic-auth'), { validate, authenticate, disableHook: true })
+fastify.register(require('fastify-basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
@@ -74,7 +74,7 @@ Use with [`fastify-auth`](https://github.com/fastify/fastify-auth):
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
 fastify.register(require('fastify-auth'))
-fastify.register(require('fastify-basic-auth'), { validate, authenticate, disableHook: true })
+fastify.register(require('fastify-basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
