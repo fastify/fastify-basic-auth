@@ -384,7 +384,7 @@ test('Hook with fastify-auth- 401', t => {
 })
 
 test('Missing header', t => {
-  t.plan(2)
+  t.plan(3)
 
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
@@ -414,6 +414,11 @@ test('Missing header', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 401)
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Missing or bad formatted authorization header'
+    })
   })
 })
 
