@@ -29,8 +29,7 @@ function basicPlugin (fastify, opts, next) {
 
     function done (err) {
       if (err !== undefined) {
-        reply.code(401)
-        next(err)
+        reply.code(401).send(err)
       } else {
         next()
       }
