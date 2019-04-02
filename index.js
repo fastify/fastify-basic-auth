@@ -2,6 +2,7 @@
 
 const fp = require('fastify-plugin')
 const auth = require('basic-auth')
+const { Unauthorized } = require('http-errors')
 
 function basicPlugin (fastify, opts, next) {
   if (typeof opts.validate !== 'function') {
@@ -19,7 +20,7 @@ function basicPlugin (fastify, opts, next) {
     }
     var credentials = auth(req)
     if (credentials == null) {
-      done(new Error('Missing or bad formatted authorization header'))
+      done(new Unauthorized('Missing or bad formatted authorization header'))
     } else {
       var result = validate(credentials.name, credentials.pass, req, reply, done)
       if (result && typeof result.then === 'function') {
@@ -29,7 +30,10 @@ function basicPlugin (fastify, opts, next) {
 
     function done (err) {
       if (err !== undefined) {
-        reply.code(401)
+        // We set the status code to be 401 if it is not set
+        if (!err.statusCode) {
+          err.statusCode = 401
+        }
         next(err)
       } else {
         next()

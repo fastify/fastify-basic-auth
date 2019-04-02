@@ -97,6 +97,26 @@ fastify.after(() => {
 })
 ```
 
+### Custom error handler
+
+On failed authentication, *fastify-basic-auth* will call the Fastify
+[generic error
+handler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) with an error.
+*fastify-basic-auth* sets the `err.statusCode` property to `401`.
+
+In order to properly `401` errors:
+
+```js
+fastify.setErrorHandler(function (err, req, reply) {
+  if (err.statusCode === 401) {
+    // this was unauthorized! Display the correct page/message.
+    reply.send({ was: 'unauthorized' })
+    return
+  }
+  reply.send(err)
+})
+```
+
 ## Options
 
 ### `validate` <Function> (required)
