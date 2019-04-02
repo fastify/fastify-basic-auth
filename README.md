@@ -110,7 +110,7 @@ In order to properly `401` errors:
 fastify.setErrorHandler(function (err, req, reply) {
   if (err.statusCode === 401) {
     // this was unauthorized! Display the correct page/message.
-    reply.send({ was: 'unauthorized' })
+    reply.code(401).send({ was: 'unauthorized' })
     return
   }
   reply.send(err)
