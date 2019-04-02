@@ -1,7 +1,7 @@
 # fastify-basic-auth
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
- [![Build Status](https://travis-ci.org/fastify/fastify-basic-auth.svg?branch=master)](https://travis-ci.org/fastify/fastify-basic-auth)
+ [![Build Status](https://dev.azure.com/fastify/fastify/_apis/build/status/fastify.fastify-basic-auth?branchName=master)](https://dev.azure.com/fastify/fastify/_build/latest?definitionId=7&branchName=master)
 
  A simple basic auth plugin for Fastify.
 
