@@ -5,7 +5,8 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "standard && tap test.js"
+    "typescript": "tsc --project ./test/types/tsconfig.json",
+    "test": "standard && tap test/*.test.js && npm run typescript"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   },
   "homepage": "https://github.com/fastify/fastify-basic-auth#readme",
   "devDependencies": {
+    "@types/node": "^12.7.12",
     "fastify": "^2.0.0",
     "fastify-auth": "^0.3.0",
     "standard": "^11.0.1",

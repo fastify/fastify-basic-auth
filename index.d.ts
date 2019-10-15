@@ -20,7 +20,7 @@ declare const fastifyBasicAuth: fastify.Plugin<
       password: string,
       req: fastify.FastifyRequest,
       reply: fastify.FastifyReply<ServerResponse>,
-      done?: (err?: Error) => void
+      done: (err?: Error) => void
     ) => void;
     authenticate?: boolean | { realm: string };
   }
