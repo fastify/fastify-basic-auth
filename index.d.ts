@@ -1,5 +1,3 @@
-// Definitions by: ricardo-devis-agullo <https://github.com/ricardo-devis-agullo>
-
 import fastify = require('fastify');
 
 import { Server, IncomingMessage, ServerResponse } from 'http';
