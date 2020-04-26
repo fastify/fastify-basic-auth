@@ -64,6 +64,6 @@ function getAuthenticateHeader (authenticate) {
 }
 
 module.exports = fp(basicPlugin, {
-  fastify: '>=1.0.0',
+  fastify: '>=3.0.0',
   name: 'fastify-basic-auth'
 })

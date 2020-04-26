@@ -1,27 +1,32 @@
-import fastify = require('fastify');
-
-import { Server, IncomingMessage, ServerResponse } from 'http';
+import {
+  FastifyRequest,
+  FastifyPlugin,
+  FastifyReply,
+  onRequestHookHandler,
+  preParsingHookHandler,
+  preValidationHookHandler,
+  preHandlerHookHandler
+} from 'fastify'
 
 declare module 'fastify' {
-  interface FastifyInstance<HttpServer, HttpRequest, HttpResponse> {
-    basicAuth: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>;
+  interface FastifyInstance {
+    basicAuth: onRequestHookHandler |
+               preParsingHookHandler |
+               preValidationHookHandler |
+               preHandlerHookHandler
   }
 }
 
-declare const fastifyBasicAuth: fastify.Plugin<
-  Server,
-  IncomingMessage,
-  ServerResponse,
-  {
-    validate: (
-      username: string,
-      password: string,
-      req: fastify.FastifyRequest,
-      reply: fastify.FastifyReply<ServerResponse>,
-      done: (err?: Error) => void
-    ) => void;
-    authenticate?: boolean | { realm: string };
-  }
->;
+export interface FastifyBasicAuthOptions {
+  validate(
+    username: string,
+    password: string,
+    req: FastifyRequest,
+    reply: FastifyReply,
+    done: (err?: Error) => void
+  ): void | Promise<void>;
+  authenticate?: boolean | { realm: string };
+}
 
-export = fastifyBasicAuth;
+declare const fastifyBasicAuth: FastifyPlugin<FastifyBasicAuthOptions>
+export default fastifyBasicAuth;
