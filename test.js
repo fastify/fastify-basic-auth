@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('fastify')
 const basicAuth = require('./index')
-// const fastifyAuth = require('fastify-auth')
+const fastifyAuth = null // require('fastify-auth')
 const { Unauthorized } = require('http-errors')
 
 test('Basic', t => {
@@ -296,93 +296,93 @@ test('Hook - 401', t => {
   })
 })
 
-// test('With fastify-auth - 401', t => {
-//   t.plan(3)
+test('With fastify-auth - 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+  t.plan(3)
 
-//   const fastify = Fastify()
-//   fastify
-//     .register(fastifyAuth)
-//     .register(basicAuth, { validate })
+  const fastify = Fastify()
+  fastify
+    .register(fastifyAuth)
+    .register(basicAuth, { validate })
 
-//   function validate (username, password, req, res, done) {
-//     if (username === 'user' && password === 'pwd') {
-//       done()
-//     } else {
-//       done(new Error('Winter is coming'))
-//     }
-//   }
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
 
-//   fastify.after(() => {
-//     fastify.route({
-//       method: 'GET',
-//       url: '/',
-//       preHandler: fastify.auth([fastify.basicAuth]),
-//       handler: (req, reply) => {
-//         reply.send({ hello: 'world' })
-//       }
-//     })
-//   })
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.auth([fastify.basicAuth]),
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
 
-//   fastify.inject({
-//     url: '/',
-//     method: 'GET',
-//     headers: {
-//       authorization: basicAuthHeader('user', 'pwdd')
-//     }
-//   }, (err, res) => {
-//     t.error(err)
-//     t.strictEqual(res.statusCode, 401)
-//     t.deepEqual(JSON.parse(res.payload), {
-//       error: 'Unauthorized',
-//       message: 'Winter is coming',
-//       statusCode: 401
-//     })
-//   })
-// })
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwdd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 401)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Unauthorized',
+      message: 'Winter is coming',
+      statusCode: 401
+    })
+  })
+})
 
-// test('Hook with fastify-auth- 401', t => {
-//   t.plan(3)
+test('Hook with fastify-auth- 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+  t.plan(3)
 
-//   const fastify = Fastify()
-//   fastify
-//     .register(fastifyAuth)
-//     .register(basicAuth, { validate })
+  const fastify = Fastify()
+  fastify
+    .register(fastifyAuth)
+    .register(basicAuth, { validate })
 
-//   function validate (username, password, req, res, done) {
-//     if (username === 'user' && password === 'pwd') {
-//       done()
-//     } else {
-//       done(new Error('Winter is coming'))
-//     }
-//   }
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
 
-//   fastify.after(() => {
-//     fastify.addHook('preHandler', fastify.auth([fastify.basicAuth]))
-//     fastify.route({
-//       method: 'GET',
-//       url: '/',
-//       handler: (req, reply) => {
-//         reply.send({ hello: 'world' })
-//       }
-//     })
-//   })
+  fastify.after(() => {
+    fastify.addHook('preHandler', fastify.auth([fastify.basicAuth]))
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
 
-//   fastify.inject({
-//     url: '/',
-//     method: 'GET',
-//     headers: {
-//       authorization: basicAuthHeader('user', 'pwdd')
-//     }
-//   }, (err, res) => {
-//     t.error(err)
-//     t.strictEqual(res.statusCode, 401)
-//     t.deepEqual(JSON.parse(res.payload), {
-//       error: 'Unauthorized',
-//       message: 'Winter is coming',
-//       statusCode: 401
-//     })
-//   })
-// })
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwdd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 401)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Unauthorized',
+      message: 'Winter is coming',
+      statusCode: 401
+    })
+  })
+})
 
 test('Missing header', t => {
   t.plan(3)
@@ -462,50 +462,50 @@ test('Fastify context', t => {
   })
 })
 
-// test('setErrorHandler custom error and 401', t => {
-//   t.plan(4)
+test('setErrorHandler custom error and 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+  t.plan(4)
 
-//   const fastify = Fastify()
-//   fastify
-//     .register(fastifyAuth)
-//     .register(basicAuth, { validate })
+  const fastify = Fastify()
+  fastify
+    .register(fastifyAuth)
+    .register(basicAuth, { validate })
 
-//   function validate (username, password, req, res, done) {
-//     done(new Error('Winter is coming'))
-//   }
+  function validate (username, password, req, res, done) {
+    done(new Error('Winter is coming'))
+  }
 
-//   fastify.after(() => {
-//     fastify.addHook('preHandler', fastify.auth([fastify.basicAuth]))
-//     fastify.route({
-//       method: 'GET',
-//       url: '/',
-//       handler: (req, reply) => {
-//         reply.send({ hello: 'world' })
-//       }
-//     })
-//   })
+  fastify.after(() => {
+    fastify.addHook('preHandler', fastify.auth([fastify.basicAuth]))
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
 
-//   fastify.setErrorHandler(function (err, req, reply) {
-//     t.strictEqual(err.statusCode, 401)
-//     reply.send(err)
-//   })
+  fastify.setErrorHandler(function (err, req, reply) {
+    t.strictEqual(err.statusCode, 401)
+    reply.send(err)
+  })
 
-//   fastify.inject({
-//     url: '/',
-//     method: 'GET',
-//     headers: {
-//       authorization: basicAuthHeader('user', 'pwdd')
-//     }
-//   }, (err, res) => {
-//     t.error(err)
-//     t.strictEqual(res.statusCode, 401)
-//     t.deepEqual(JSON.parse(res.payload), {
-//       error: 'Unauthorized',
-//       message: 'Winter is coming',
-//       statusCode: 401
-//     })
-//   })
-// })
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwdd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 401)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Unauthorized',
+      message: 'Winter is coming',
+      statusCode: 401
+    })
+  })
+})
 
 test('Missing header and custom error handler', t => {
   t.plan(4)
