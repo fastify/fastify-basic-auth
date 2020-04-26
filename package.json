@@ -5,8 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "typescript": "tsc --project ./test/types/tsconfig.json",
-    "test": "standard && tap test/*.test.js && npm run typescript"
+    "test": "standard && tap test.js && tsd"
   },
   "repository": {
     "type": "git",
@@ -26,15 +25,18 @@
   },
   "homepage": "https://github.com/fastify/fastify-basic-auth#readme",
   "devDependencies": {
-    "@types/node": "^12.7.12",
-    "fastify": "^2.0.0",
-    "fastify-auth": "^0.3.0",
-    "standard": "^11.0.1",
-    "tap": "^12.0.1"
+    "fastify": "^3.0.0-alpha.1",
+    "fastify-auth": "^0.7.2",
+    "standard": "^14.3.3",
+    "tap": "^14.10.7",
+    "tsd": "^0.11.0"
   },
   "dependencies": {
-    "basic-auth": "^2.0.0",
-    "fastify-plugin": "^1.0.1",
-    "http-errors": "^1.7.2"
+    "basic-auth": "^2.0.1",
+    "fastify-plugin": "^2.0.0",
+    "http-errors": "^1.7.3"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
