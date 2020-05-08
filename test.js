@@ -24,7 +24,7 @@ test('Basic', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -61,7 +61,7 @@ test('Basic - 401', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -103,7 +103,7 @@ test('Basic with promises', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -140,7 +140,7 @@ test('Basic with promises - 401', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -183,7 +183,7 @@ test('WWW-Authenticate (authenticate: true)', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -207,7 +207,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"})', t => {
   t.plan(3)
 
   const fastify = Fastify()
-  const authenticate = {realm: 'example'}
+  const authenticate = { realm: 'example' }
   fastify.register(basicAuth, { validate, authenticate })
 
   function validate (username, password, req, res, done) {
@@ -222,7 +222,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"})', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -316,7 +316,7 @@ test('With fastify-auth - 401', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.auth([fastify.basicAuth]),
+      preHandler: fastify.auth([fastify.basicAuth]),
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -402,7 +402,7 @@ test('Missing header', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -443,7 +443,7 @@ test('Fastify context', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -525,7 +525,7 @@ test('Missing header and custom error handler', t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      beforeHandler: fastify.basicAuth,
+      preHandler: fastify.basicAuth,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
