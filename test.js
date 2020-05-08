@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('fastify')
 const basicAuth = require('./index')
-const fastifyAuth = null // require('fastify-auth')
+const fastifyAuth = require('fastify-auth')
 const { Unauthorized } = require('http-errors')
 
 test('Basic', t => {
@@ -296,7 +296,7 @@ test('Hook - 401', t => {
   })
 })
 
-test('With fastify-auth - 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+test('With fastify-auth - 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -340,7 +340,7 @@ test('With fastify-auth - 401', { skip: 'fastify-auth still needs to be updated'
   })
 })
 
-test('Hook with fastify-auth- 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+test('Hook with fastify-auth- 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -462,7 +462,7 @@ test('Fastify context', t => {
   })
 })
 
-test('setErrorHandler custom error and 401', { skip: 'fastify-auth still needs to be updated' }, t => {
+test('setErrorHandler custom error and 401', t => {
   t.plan(4)
 
   const fastify = Fastify()
