@@ -11,9 +11,8 @@ import {
 declare module 'fastify' {
   interface FastifyInstance {
     basicAuth: onRequestHookHandler |
-               preParsingHookHandler |
-               preValidationHookHandler |
-               preHandlerHookHandler
+      preValidationHookHandler |
+      preHandlerHookHandler
   }
 }
 

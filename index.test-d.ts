@@ -31,6 +31,5 @@ app.register(fastifyBasicAuth, {
 })
 
 expectAssignable<onRequestHookHandler>(app.basicAuth)
-expectAssignable<preParsingHookHandler>(app.basicAuth)
 expectAssignable<preValidationHookHandler>(app.basicAuth)
 expectAssignable<preHandlerHookHandler>(app.basicAuth)
