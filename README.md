@@ -1,6 +1,6 @@
 # fastify-basic-auth
 
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)  ![Node CI](https://github.com/fastify/fastify-basic-auth/workflows/Node%20CI/badge.svg)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)  ![CI](https://github.com/fastify/fastify-basic-auth/workflows/CI/badge.svg)
 
  A simple basic auth plugin for Fastify.
 
