@@ -18,11 +18,11 @@ function basicPlugin (fastify, opts, next) {
     if (authenticateHeader) {
       reply.header(authenticateHeader.key, authenticateHeader.value)
     }
-    var credentials = auth(req)
+    const credentials = auth(req)
     if (credentials == null) {
       done(new Unauthorized('Missing or bad formatted authorization header'))
     } else {
-      var result = validate(credentials.name, credentials.pass, req, reply, done)
+      const result = validate(credentials.name, credentials.pass, req, reply, done)
       if (result && typeof result.then === 'function') {
         result.then(done, done)
       }
