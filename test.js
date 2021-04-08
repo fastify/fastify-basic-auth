@@ -551,6 +551,65 @@ test('Missing header and custom error handler', t => {
   })
 })
 
+test('Invalid options (authenticate)', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: 'i am invalid' })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.ready(function (err) {
+    t.equal(err.message, 'Basic Auth: Invalid authenticate option')
+  })
+})
+
+test('Invalid options (authenticate realm)', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: { realm: true } })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.is(res.headers['www-authenticate'], 'Basic')
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
 function basicAuthHeader (username, password) {
   return 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64')
 }
