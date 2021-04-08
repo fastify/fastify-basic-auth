@@ -8,7 +8,7 @@ function basicPlugin (fastify, opts, next) {
   if (typeof opts.validate !== 'function') {
     return next(new Error('Basic Auth: Missing validate function'))
   }
-  const authenticateHeader = getAuthenticateHeader(opts.authenticate)
+  const authenticateHeader = getAuthenticateHeader(opts.authenticate, next)
   const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)
 
@@ -42,7 +42,7 @@ function basicPlugin (fastify, opts, next) {
   }
 }
 
-function getAuthenticateHeader (authenticate) {
+function getAuthenticateHeader (authenticate, next) {
   if (!authenticate) return false
   if (authenticate === true) {
     return {
@@ -60,7 +60,7 @@ function getAuthenticateHeader (authenticate) {
     }
   }
 
-  throw Error('Basic Auth: Invalid authenticate option')
+  next(new Error('Basic Auth: Invalid authenticate option'))
 }
 
 module.exports = fp(basicPlugin, {

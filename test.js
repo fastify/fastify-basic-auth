@@ -39,7 +39,7 @@ test('Basic', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -76,8 +76,8 @@ test('Basic - 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -118,7 +118,7 @@ test('Basic with promises', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -155,8 +155,8 @@ test('Basic with promises - 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -197,9 +197,9 @@ test('WWW-Authenticate (authenticate: true)', t => {
       authorization: basicAuthHeader('user', 'pwd')
     }
   }, (err, res) => {
-    t.is(res.headers['www-authenticate'], 'Basic')
+    t.equal(res.headers['www-authenticate'], 'Basic')
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -236,9 +236,9 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"})', t => {
       authorization: basicAuthHeader('user', 'pwd')
     }
   }, (err, res) => {
-    t.is(res.headers['www-authenticate'], 'Basic realm="example"')
+    t.equal(res.headers['www-authenticate'], 'Basic realm="example"')
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -249,7 +249,7 @@ test('Missing validate function', t => {
   fastify.register(basicAuth)
 
   fastify.ready(err => {
-    t.is(err.message, 'Basic Auth: Missing validate function')
+    t.equal(err.message, 'Basic Auth: Missing validate function')
   })
 })
 
@@ -287,8 +287,8 @@ test('Hook - 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -331,8 +331,8 @@ test('With fastify-auth - 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -375,8 +375,8 @@ test('Hook with fastify-auth- 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -414,8 +414,8 @@ test('Missing header', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       statusCode: 401,
       error: 'Unauthorized',
       message: 'Missing or bad formatted authorization header'
@@ -458,7 +458,7 @@ test('Fastify context', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -486,7 +486,7 @@ test('setErrorHandler custom error and 401', t => {
   })
 
   fastify.setErrorHandler(function (err, req, reply) {
-    t.strictEqual(err.statusCode, 401)
+    t.equal(err.statusCode, 401)
     reply.send(err)
   })
 
@@ -498,8 +498,8 @@ test('setErrorHandler custom error and 401', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       error: 'Unauthorized',
       message: 'Winter is coming',
       statusCode: 401
@@ -542,12 +542,71 @@ test('Missing header and custom error handler', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
       statusCode: 401,
       error: 'Unauthorized',
       message: 'Missing or bad formatted authorization header'
     })
+  })
+})
+
+test('Invalid options (authenticate)', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: 'i am invalid' })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.ready(function (err) {
+    t.equal(err.message, 'Basic Auth: Invalid authenticate option')
+  })
+})
+
+test('Invalid options (authenticate realm)', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: { realm: true } })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.equal(res.headers['www-authenticate'], 'Basic')
+    t.error(err)
+    t.equal(res.statusCode, 200)
   })
 })
 
