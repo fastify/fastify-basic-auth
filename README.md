@@ -166,6 +166,19 @@ fastify.register(require('fastify-basic-auth'), {
 })
 ```
 
+The `realm` key could also be a function:
+
+```js
+fastify.register(require('fastify-basic-auth'), {
+  validate,
+  authenticate: {
+    realm(req) {
+      return 'example' // WWW-Authenticate: Basic realm="example"
+    }
+  }
+})
+```
+
 
 ## License
 
