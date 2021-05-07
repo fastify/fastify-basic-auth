@@ -738,6 +738,47 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }})', t => {
   })
 })
 
+test('No 401 no realm', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate, authenticate: true })
+
+  function validate (username, password, req, res) {
+    const err = new Error('Winter is coming')
+    err.statusCode = 402
+    return Promise.reject(err)
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwdd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 402)
+    t.equal(res.headers['www-authenticate'], undefined)
+    t.same(JSON.parse(res.payload), {
+      error: 'Payment Required',
+      message: 'Winter is coming',
+      statusCode: 402
+    })
+  })
+})
+
 function basicAuthHeader (username, password) {
   return 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64')
 }
