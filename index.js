@@ -4,20 +4,15 @@ const fp = require('fastify-plugin')
 const auth = require('basic-auth')
 const { Unauthorized } = require('http-errors')
 
-function basicPlugin (fastify, opts, next) {
+async function basicPlugin (fastify, opts) {
   if (typeof opts.validate !== 'function') {
-    return next(new Error('Basic Auth: Missing validate function'))
+    throw new Error('Basic Auth: Missing validate function')
   }
-  const authenticateHeader = getAuthenticateHeader(opts.authenticate, next)
+  const authenticateHeader = getAuthenticateHeader(opts.authenticate)
   const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)
 
-  next()
-
   function basicAuth (req, reply, next) {
-    if (authenticateHeader) {
-      reply.header(authenticateHeader.key, authenticateHeader.value)
-    }
     const credentials = auth(req)
     if (credentials == null) {
       done(new Unauthorized('Missing or bad formatted authorization header'))
@@ -28,39 +23,51 @@ function basicPlugin (fastify, opts, next) {
       }
     }
 
-    function done (err) {
-      if (err !== undefined) {
+    function done (err, realm) {
+      // TODO remove in the next major
+      if (typeof err === 'string') {
+        realm = err
+        err = undefined
+      }
+      if (err) {
         // We set the status code to be 401 if it is not set
         if (!err.statusCode) {
           err.statusCode = 401
         }
         next(err)
       } else {
+        const header = realm ? formatRealm(realm) : authenticateHeader
+        reply.header('WWW-Authenticate', header)
         next()
       }
     }
   }
 }
 
-function getAuthenticateHeader (authenticate, next) {
+function getAuthenticateHeader (authenticate) {
   if (!authenticate) return false
   if (authenticate === true) {
-    return {
-      key: 'WWW-Authenticate',
-      value: 'Basic'
-    }
+    return 'Basic'
   }
   if (typeof authenticate === 'object') {
-    const realm = (authenticate.realm && typeof authenticate.realm === 'string')
-      ? authenticate.realm
-      : ''
-    return {
-      key: 'WWW-Authenticate',
-      value: 'Basic' + (realm ? ` realm="${realm}"` : '')
+    const realm = formatRealm(authenticate.realm)
+    if (realm) {
+      return realm
     }
   }
 
-  next(new Error('Basic Auth: Invalid authenticate option'))
+  throw new Error('Basic Auth: Invalid authenticate option')
+}
+
+function formatRealm (realm) {
+  switch (typeof realm) {
+    case 'undefined':
+      return 'Basic'
+    case 'boolean':
+      return 'Basic'
+    case 'string':
+      return `Basic realm="${realm}"`
+  }
 }
 
 module.exports = fp(basicPlugin, {
