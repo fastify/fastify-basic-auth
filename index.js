@@ -13,13 +13,6 @@ async function basicPlugin (fastify, opts) {
   fastify.decorate('basicAuth', basicAuth)
 
   function basicAuth (req, reply, next) {
-    switch (typeof authenticateHeader) {
-      case 'string':
-        reply.header('WWW-Authenticate', authenticateHeader)
-        break
-      case 'function':
-        reply.header('WWW-Authenticate', authenticateHeader(req))
-    }
     const credentials = auth(req)
     if (credentials == null) {
       done(new Unauthorized('Missing or bad formatted authorization header'))
@@ -35,6 +28,17 @@ async function basicPlugin (fastify, opts) {
         // We set the status code to be 401 if it is not set
         if (!err.statusCode) {
           err.statusCode = 401
+        }
+
+        if (err.statusCode === 401) {
+          switch (typeof authenticateHeader) {
+            case 'string':
+              reply.header('WWW-Authenticate', authenticateHeader)
+              break
+            case 'function':
+              reply.header('WWW-Authenticate', authenticateHeader(req))
+              break
+          }
         }
         next(err)
       } else {
