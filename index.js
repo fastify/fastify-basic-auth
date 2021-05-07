@@ -57,10 +57,10 @@ function getAuthenticateHeader (authenticate) {
       case 'boolean':
         return 'Basic'
       case 'string':
-        return `Basic realm="${realm}"` 
+        return `Basic realm="${realm}"`
       case 'function':
         return function (req) {
-          return `Basic realm="${realm(req)}"` 
+          return `Basic realm="${realm(req)}"`
         }
     }
   }

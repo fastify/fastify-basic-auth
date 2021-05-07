@@ -610,12 +610,51 @@ test('Invalid options (authenticate realm)', t => {
   })
 })
 
+test('Invalid options (authenticate realm = undefined)', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: { realm: undefined } })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.headers['www-authenticate'], 'Basic')
+    t.equal(res.statusCode, 200)
+  })
+})
+
 test('WWW-Authenticate Realm (authenticate: {realm (req) { }})', t => {
   t.plan(4)
 
   const fastify = Fastify()
   const authenticate = {
-    realm(req) {
+    realm (req) {
       t.equal(req.url, '/')
       return 'root'
     }
