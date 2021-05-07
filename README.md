@@ -55,7 +55,7 @@ const authenticate = {realm: 'Westeros'}
 fastify.register(require('fastify-basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
-    return new Error('Winter is coming')
+    throw new Error('Winter is coming')
   }
 }
 
@@ -79,7 +79,7 @@ fastify.register(require('fastify-auth'))
 fastify.register(require('fastify-basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
-    return new Error('Winter is coming')
+    throw new Error('Winter is coming')
   }
 }
 
@@ -132,7 +132,33 @@ the `validate` function may return a promise, resolving for valid
 requests and rejecting for invalid. This can also be achieved using
 an `async/await` function, and throwing for invalid requests.
 
-See code above for examples.
+It is also possible to override set the `realm` dynamically by returning it
+as the first argument.
+
+```js
+const fastify = require('fastify')()
+const authenticate = {realm: 'Westeros'}
+fastify.register(require('fastify-basic-auth'), { validate, authenticate })
+async function validate (username, password, req, reply) {
+  if (username !== 'Tyrion' || password !== 'Wine') {
+    throw new Error('Winter is coming')
+  }
+
+  // custom realm
+  return 'Lannister'
+}
+
+fastify.after(() => {
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    onRequest: fastify.basicAuth,
+    handler: async (req, reply) => {
+      return { hello: 'world' }
+    }
+  })
+})
+```
 
 ### `authenticate` <Boolean|Object> (optional, default: false)
 
@@ -165,20 +191,6 @@ fastify.register(require('fastify-basic-auth'), {
   authenticate: {realm: 'example'} // WWW-Authenticate: Basic realm="example"
 })
 ```
-
-The `realm` key could also be a function:
-
-```js
-fastify.register(require('fastify-basic-auth'), {
-  validate,
-  authenticate: {
-    realm(req) {
-      return 'example' // WWW-Authenticate: Basic realm="example"
-    }
-  }
-})
-```
-
 
 ## License
 

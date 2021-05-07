@@ -571,6 +571,26 @@ test('Invalid options (authenticate)', t => {
   })
 })
 
+test('Invalid options (realm is a number)', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify
+    .register(basicAuth, { validate, authenticate: { realm: 42 } })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.ready(function (err) {
+    t.equal(err.message, 'Basic Auth: Invalid authenticate option')
+  })
+})
+
 test('Invalid options (authenticate realm)', t => {
   t.plan(3)
 
@@ -649,21 +669,18 @@ test('Invalid options (authenticate realm = undefined)', t => {
   })
 })
 
-test('WWW-Authenticate Realm (authenticate: {realm (req) { }})', t => {
-  t.plan(4)
+test('WWW-Authenticate Realm dynamic realm', t => {
+  t.plan(3)
 
   const fastify = Fastify()
   const authenticate = {
-    realm (req) {
-      t.equal(req.url, '/')
-      return 'root'
-    }
+    realm: true
   }
   fastify.register(basicAuth, { validate, authenticate })
 
   function validate (username, password, req, res, done) {
     if (username === 'user' && password === 'pwd') {
-      done()
+      done(null, 'root')
     } else {
       done(new Error('Unauthorized'))
     }
@@ -687,8 +704,49 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }})', t => {
       authorization: basicAuthHeader('user', 'pwd')
     }
   }, (err, res) => {
-    t.equal(res.headers['www-authenticate'], 'Basic realm="root"')
     t.error(err)
+    t.equal(res.headers['www-authenticate'], 'Basic realm="root"')
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('WWW-Authenticate Realm dynamic realm promise', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  const authenticate = {
+    realm: true
+  }
+  fastify.register(basicAuth, { validate, authenticate })
+
+  function validate (username, password, req, res) {
+    if (username === 'user' && password === 'pwd') {
+      return Promise.resolve('root')
+    } else {
+      return Promise.reject(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.headers['www-authenticate'], 'Basic realm="root"')
     t.equal(res.statusCode, 200)
   })
 })
