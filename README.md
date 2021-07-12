@@ -179,6 +179,9 @@ fastify.register(require('fastify-basic-auth'), {
 })
 ```
 
+### `headerName` <String> (optional, default: undefined)
+
+When supplied, the `headerName` option will configure the plugin to parse the basic auth credentials from the given header name, rather than the default `Authorization` header.
 
 ## License
 

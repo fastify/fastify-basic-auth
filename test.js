@@ -779,6 +779,44 @@ test('No 401 no realm', t => {
   })
 })
 
+test('Basic with custom headerName', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate, headerName: 'x-test-authorization' })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      'x-test-authorization': basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    console.log(err, res)
+    t.error(err)
+    t.equal(res.statusCode, 200)
+  })
+})
+
 function basicAuthHeader (username, password) {
   return 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64')
 }

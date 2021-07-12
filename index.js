@@ -13,7 +13,9 @@ async function basicPlugin (fastify, opts) {
   fastify.decorate('basicAuth', basicAuth)
 
   function basicAuth (req, reply, next) {
-    const credentials = auth(req)
+    const credentials = opts.headerName
+      ? auth.parse(req.headers[opts.headerName])
+      : auth(req)
     if (credentials == null) {
       done(new Unauthorized('Missing or bad formatted authorization header'))
     } else {

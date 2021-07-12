@@ -25,6 +25,7 @@ export interface FastifyBasicAuthOptions {
     done: (err?: Error) => void
   ): void | Promise<void>;
   authenticate?: boolean | { realm: string };
+  headerName?: string;
 }
 
 declare const fastifyBasicAuth: FastifyPlugin<FastifyBasicAuthOptions>
