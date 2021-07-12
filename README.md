@@ -179,6 +179,17 @@ fastify.register(require('fastify-basic-auth'), {
 })
 ```
 
+### `header` String (optional)
+
+When supplied, the header option is the name of the header to get
+credentials from for validation.
+
+```js
+fastify.register(require('fastify-basic-auth'), {
+  validate,
+  header: 'x-forwarded-authorization'
+})
+```
 
 ## License
 

@@ -9,11 +9,13 @@ async function basicPlugin (fastify, opts) {
     throw new Error('Basic Auth: Missing validate function')
   }
   const authenticateHeader = getAuthenticateHeader(opts.authenticate)
+  const header = (opts.header && opts.header.toLowerCase()) || 'authorization'
+
   const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)
 
   function basicAuth (req, reply, next) {
-    const credentials = auth(req)
+    const credentials = auth.parse(req.headers[header])
     if (credentials == null) {
       done(new Unauthorized('Missing or bad formatted authorization header'))
     } else {

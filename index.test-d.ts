@@ -17,7 +17,8 @@ app.register(fastifyBasicAuth, {
     expectType<string>(password)
     expectType<FastifyRequest>(req)
     expectType<FastifyReply>(reply)
-  }
+  },
+  header: 'x-forwarded-authorization'
 })
 
 app.register(fastifyBasicAuth, {
