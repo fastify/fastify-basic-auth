@@ -260,6 +260,47 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"})', t => {
   })
 })
 
+test('Header option specified', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, {
+    validate,
+    header: 'X-Forwarded-Authorization'
+  })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('notuser', 'notpwd'),
+      'x-forwarded-authorization': basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+  })
+})
+
 test('Missing validate function', t => {
   t.plan(1)
 
