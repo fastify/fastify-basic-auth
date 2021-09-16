@@ -17,6 +17,7 @@ app.register(fastifyBasicAuth, {
     expectType<string>(password)
     expectType<FastifyRequest>(req)
     expectType<FastifyReply>(reply)
+    if (Math.random() > 0.5) return new Error()
   },
   header: 'x-forwarded-authorization'
 })
