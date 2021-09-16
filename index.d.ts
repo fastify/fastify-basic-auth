@@ -23,7 +23,7 @@ export interface FastifyBasicAuthOptions {
     req: FastifyRequest,
     reply: FastifyReply,
     done: (err?: Error) => void
-  ): Error | void | Promise<Error | void>;
+  ): void | Promise<Error | void>;
   authenticate?: boolean | { realm: string };
   header?: string;
 }
