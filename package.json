@@ -30,7 +30,7 @@
     "fastify-auth": "^1.0.0",
     "standard": "^16.0.1",
     "tap": "^15.0.2",
-    "tsd": "^0.17.0"
+    "tsd": "^0.18.0"
   },
   "dependencies": {
     "basic-auth": "^2.0.1",
