@@ -5,7 +5,8 @@ import {
   onRequestHookHandler,
   preParsingHookHandler,
   preValidationHookHandler,
-  preHandlerHookHandler, FastifyInstance
+  preHandlerHookHandler,
+  FastifyInstance
 } from 'fastify'
 
 declare module 'fastify' {
