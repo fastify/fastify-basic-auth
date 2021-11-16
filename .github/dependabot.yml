@@ -3,9 +3,9 @@ updates:
   - package-ecosystem: github-actions
     directory: '/'
     ignore:
-        - dependency-name: "*"
+        - dependency-name: '*'
           update-types:
-              ["version-update:semver-minor", "version-update:semver-patch"]
+              ['version-update:semver-minor', 'version-update:semver-patch']
     schedule:
       interval: daily
     open-pull-requests-limit: 10
