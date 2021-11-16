@@ -5,7 +5,8 @@ import {
   onRequestHookHandler,
   preParsingHookHandler,
   preValidationHookHandler,
-  preHandlerHookHandler
+  preHandlerHookHandler,
+  FastifyInstance
 } from 'fastify'
 
 declare module 'fastify' {
@@ -18,6 +19,7 @@ declare module 'fastify' {
 
 export interface FastifyBasicAuthOptions {
   validate(
+    this: FastifyInstance,
     username: string,
     password: string,
     req: FastifyRequest,
