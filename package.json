@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/fastify/fastify-basic-auth#readme",
   "devDependencies": {
-    "@types/node": "^16.0.0",
+    "@types/node": "^17.0.0",
     "fastify": "^3.0.0",
     "fastify-auth": "^1.0.0",
     "standard": "^16.0.1",
