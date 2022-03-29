@@ -99,6 +99,30 @@ fastify.after(() => {
 })
 ```
 
+### How to add credentials to a request
+The basic-auth plugin retrieves the credentials from the [Authorization](https://en.wikipedia.org/wiki/Basic_access_authentication) header.
+
+A simple example to add `username` and `password` to the reply header:
+
+```typescript
+fastify.get('/',  (request, reply) =>{
+    const credentials: string = Buffer.from("username:password").toString('base64')
+    reply.header("Authorisazion", "Basic " + credentials)
+    reply.send()
+})
+```
+
+An example to add `username` and `password` via [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch):
+```typescript
+fetch('URL_GOES_HERE', { 
+    method: 'post', 
+    headers: new Headers({
+        'Authorization': 'Basic '+btoa('username:password'),
+    }), 
+    body: 'something'
+});
+```
+
 ### Custom error handler
 
 On failed authentication, *fastify-basic-auth* will call the Fastify
