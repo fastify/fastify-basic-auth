@@ -5,8 +5,9 @@ import fastify, {
   onRequestHookHandler,
   preParsingHookHandler,
   preValidationHookHandler,
-  preHandlerHookHandler
-}  from 'fastify'
+  preHandlerHookHandler,
+  FastifyInstance
+} from 'fastify'
 import fastifyBasicAuth from '.'
 
 const app = fastify()
@@ -17,6 +18,7 @@ app.register(fastifyBasicAuth, {
     expectType<string>(password)
     expectType<FastifyRequest>(req)
     expectType<FastifyReply>(reply)
+    expectType<FastifyInstance>(this)
     if (Math.random() > 0.5) return new Error()
   },
   header: 'x-forwarded-authorization'
@@ -29,6 +31,7 @@ app.register(fastifyBasicAuth, {
     expectType<FastifyRequest>(req)
     expectType<FastifyReply>(reply)
     expectAssignable<(err?: Error) => void>(done)
+    expectType<FastifyInstance>(this)
   }
 })
 
