@@ -1,7 +1,7 @@
-# fastify-basic-auth
+# @fastify/basic-auth
 
 ![CI](https://github.com/fastify/fastify-basic-auth/workflows/CI/badge.svg?branch=master)
-[![NPM version](https://img.shields.io/npm/v/fastify-basic-auth.svg?style=flat)](https://www.npmjs.com/package/fastify-basic-auth)
+[![NPM version](https://img.shields.io/npm/v/@fastify/basic-auth.svg?style=flat)](https://www.npmjs.com/package/@fastify/basic-auth)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify-basic-auth/badge.svg)](https://snyk.io/test/github/fastify/fastify-basic-auth)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
@@ -9,15 +9,15 @@
 
  ## Install
 ```
-npm i fastify-basic-auth
+npm i @fastify/basic-auth
 ```
 ## Usage
-This plugin decorates the fastify instance with a `basicAuth` function, which you can use inside any hook before your route handler, or with [`fastify-auth`](https://github.com/fastify/fastify-auth).
+This plugin decorates the fastify instance with a `basicAuth` function, which you can use inside any hook before your route handler, or with [`@fastify/auth`](https://github.com/fastify/fastify-auth).
 
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
-fastify.register(require('fastify-basic-auth'), { validate, authenticate })
+fastify.register(require('@fastify/basic-auth'), { validate, authenticate })
 // `this` inside validate is `fastify`
 function validate (username, password, req, reply, done) {
   if (username === 'Tyrion' && password === 'wine') {
@@ -40,7 +40,7 @@ Promises and *async/await* are supported as well!
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
-fastify.register(require('fastify-basic-auth'), { validate, authenticate })
+fastify.register(require('@fastify/basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
@@ -52,7 +52,7 @@ Use with `onRequest`:
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
-fastify.register(require('fastify-basic-auth'), { validate, authenticate })
+fastify.register(require('@fastify/basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
@@ -71,12 +71,12 @@ fastify.after(() => {
 })
 ```
 
-Use with [`fastify-auth`](https://github.com/fastify/fastify-auth):
+Use with [`@fastify/auth`](https://github.com/fastify/fastify-auth):
 ```js
 const fastify = require('fastify')()
 const authenticate = {realm: 'Westeros'}
-fastify.register(require('fastify-auth'))
-fastify.register(require('fastify-basic-auth'), { validate, authenticate })
+fastify.register(require('@fastify/auth'))
+fastify.register(require('@fastify/basic-auth'), { validate, authenticate })
 async function validate (username, password, req, reply) {
   if (username !== 'Tyrion' || password !== 'wine') {
     return new Error('Winter is coming')
@@ -101,10 +101,10 @@ fastify.after(() => {
 
 ### Custom error handler
 
-On failed authentication, *fastify-basic-auth* will call the Fastify
+On failed authentication, *@fastify/basic-auth* will call the Fastify
 [generic error
 handler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) with an error.
-*fastify-basic-auth* sets the `err.statusCode` property to `401`.
+*@fastify/basic-auth* sets the `err.statusCode` property to `401`.
 
 In order to properly `401` errors:
 
@@ -144,12 +144,12 @@ This can be useful in situations where we want to trigger client-side authentica
 As a boolean setting `authenticate` to `true` will set a header like so: `WWW-Authenticate: Basic`. When `false`, no header is added. This is the default.
 
 ```js
-fastify.register(require('fastify-basic-auth'), {
+fastify.register(require('@fastify/basic-auth'), {
   validate,
   authenticate: true // WWW-Authenticate: Basic
 })
 
-fastify.register(require('fastify-basic-auth'), {
+fastify.register(require('@fastify/basic-auth'), {
   validate,
   authenticate: false // no authenticate header, same as omitting authenticate option
 })
@@ -160,7 +160,7 @@ When supplied as an object the `authenticate` option may have a `realm` key.
 If the `realm` key is supplied, it will be appended to the header value:
 
 ```js
-fastify.register(require('fastify-basic-auth'), {
+fastify.register(require('@fastify/basic-auth'), {
   validate,
   authenticate: {realm: 'example'} // WWW-Authenticate: Basic realm="example"
 })
@@ -169,7 +169,7 @@ fastify.register(require('fastify-basic-auth'), {
 The `realm` key could also be a function:
 
 ```js
-fastify.register(require('fastify-basic-auth'), {
+fastify.register(require('@fastify/basic-auth'), {
   validate,
   authenticate: {
     realm(req) {
@@ -185,7 +185,7 @@ When supplied, the header option is the name of the header to get
 credentials from for validation.
 
 ```js
-fastify.register(require('fastify-basic-auth'), {
+fastify.register(require('@fastify/basic-auth'), {
   validate,
   header: 'x-forwarded-authorization'
 })
