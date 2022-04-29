@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('fastify')
 const basicAuth = require('./index')
-const fastifyAuth = require('fastify-auth')
+const fastifyAuth = require('@fastify/auth')
 const { Unauthorized } = require('http-errors')
 
 test('Basic', t => {
@@ -355,7 +355,7 @@ test('Hook - 401', t => {
   })
 })
 
-test('With fastify-auth - 401', t => {
+test('With @fastify/auth - 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -399,7 +399,7 @@ test('With fastify-auth - 401', t => {
   })
 })
 
-test('Hook with fastify-auth- 401', t => {
+test('Hook with @fastify/auth- 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
