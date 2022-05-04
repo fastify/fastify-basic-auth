@@ -12,6 +12,7 @@ import fastifyBasicAuth from '.'
 
 const app = fastify()
 
+//validation ok
 app.register(fastifyBasicAuth, {
   validate: async function validatePromise (username, password, req, reply) {
     expectType<string>(username)
@@ -22,6 +23,21 @@ app.register(fastifyBasicAuth, {
   },
   header: 'x-forwarded-authorization'
 })
+
+//validation failure
+app.register(fastifyBasicAuth, {
+  validate: async function validatePromise (username, password, req, reply) {
+    expectType<string>(username)
+    expectType<string>(password)
+    expectType<FastifyRequest>(req)
+    expectType<FastifyReply>(reply)
+    expectType<FastifyInstance>(this)
+    return new Error("unauthorized")
+  },
+  header: 'x-forwarded-authorization'
+})
+
+
 
 app.register(fastifyBasicAuth, {
   validate: function validateCallback (username, password, req, reply, done) {
