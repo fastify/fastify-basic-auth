@@ -5,7 +5,10 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "standard && tap test.js && tsd"
+    "lint": "standard",
+    "test": "npm run test:unit && npm run test:types",
+    "test:unit": "tap test.js",
+    "test:types": "tsd"
   },
   "repository": {
     "type": "git",
