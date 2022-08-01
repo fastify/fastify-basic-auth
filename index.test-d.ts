@@ -3,7 +3,6 @@ import fastify, {
   FastifyRequest,
   FastifyReply,
   onRequestHookHandler,
-  preParsingHookHandler,
   preValidationHookHandler,
   preHandlerHookHandler,
   FastifyInstance
