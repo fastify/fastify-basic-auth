@@ -18,14 +18,24 @@ declare module 'fastify' {
 }
 
 export interface FastifyBasicAuthOptions {
-  validate(
-    this: FastifyInstance,
-    username: string,
-    password: string,
-    req: FastifyRequest,
-    reply: FastifyReply,
-    done: (err?: Error) => void
-  ): void | Promise<void|Error>;
+  validate: (
+    (
+      this: FastifyInstance,
+      username: string,
+      password: string,
+      req: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<Error | void>
+  ) | (
+    (
+      this: FastifyInstance,
+      username: string,
+      password: string,
+      req: FastifyRequest,
+      reply: FastifyReply,
+      done: (err?: Error) => void
+    ) => void
+  );
   authenticate?: boolean | { realm: string | ((req: FastifyRequest) => string) };
   header?: string;
 }
