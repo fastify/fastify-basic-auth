@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('fastify')
-const basicAuth = require('./index')
+const basicAuth = require('..')
 const fastifyAuth = require('@fastify/auth')
 
 test('Basic', t => {

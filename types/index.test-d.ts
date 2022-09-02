@@ -7,7 +7,7 @@ import fastify, {
   preHandlerHookHandler,
   FastifyInstance
 } from 'fastify'
-import fastifyBasicAuth from '.'
+import fastifyBasicAuth from '..'
 
 const app = fastify()
 
