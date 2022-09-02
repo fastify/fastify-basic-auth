@@ -49,6 +49,26 @@ app.register(fastifyBasicAuth, {
   }
 })
 
+//authenticate boolean
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  authenticate: true
+})
+
+//authenticate with realm
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  authenticate: { realm: 'example' }
+})
+
+//authenticate with realm (function)
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  authenticate: { realm: function realm(req) {
+    return req.routerPath
+  }}
+})
+
 expectAssignable<onRequestHookHandler>(app.basicAuth)
 expectAssignable<preValidationHookHandler>(app.basicAuth)
 expectAssignable<preHandlerHookHandler>(app.basicAuth)
