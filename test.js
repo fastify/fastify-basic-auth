@@ -3,8 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('fastify')
 const basicAuth = require('./index')
-const fastifyAuth = require('fastify-auth')
-const { Unauthorized } = require('http-errors')
+const fastifyAuth = require('@fastify/auth')
 
 test('Basic', t => {
   t.plan(2)
@@ -355,7 +354,7 @@ test('Hook - 401', t => {
   })
 })
 
-test('With fastify-auth - 401', t => {
+test('With @fastify/auth - 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -399,7 +398,7 @@ test('With fastify-auth - 401', t => {
   })
 })
 
-test('Hook with fastify-auth- 401', t => {
+test('Hook with @fastify/auth- 401', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -476,6 +475,7 @@ test('Missing header', t => {
     t.equal(res.statusCode, 401)
     t.same(JSON.parse(res.payload), {
       statusCode: 401,
+      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
       error: 'Unauthorized',
       message: 'Missing or bad formatted authorization header'
     })
@@ -567,7 +567,7 @@ test('setErrorHandler custom error and 401', t => {
 })
 
 test('Missing header and custom error handler', t => {
-  t.plan(4)
+  t.plan(6)
 
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
@@ -592,7 +592,9 @@ test('Missing header and custom error handler', t => {
   })
 
   fastify.setErrorHandler(function (err, req, reply) {
-    t.ok(err instanceof Unauthorized)
+    t.ok(err instanceof Error)
+    t.ok(err.statusCode === 401)
+    t.ok(err.code === 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER')
     reply.send(err)
   })
 
@@ -604,6 +606,7 @@ test('Missing header and custom error handler', t => {
     t.equal(res.statusCode, 401)
     t.same(JSON.parse(res.payload), {
       statusCode: 401,
+      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
       error: 'Unauthorized',
       message: 'Missing or bad formatted authorization header'
     })

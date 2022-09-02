@@ -36,7 +36,7 @@ export interface FastifyBasicAuthOptions {
       done: (err?: Error) => void
     ) => void
   );
-  authenticate?: boolean | { realm: string };
+  authenticate?: boolean | { realm: string | ((req: FastifyRequest) => string) };
   header?: string;
 }
 
