@@ -1,9 +1,8 @@
 import {
   FastifyRequest,
-  FastifyPlugin,
+  FastifyPluginAsync,
   FastifyReply,
   onRequestHookHandler,
-  preParsingHookHandler,
   preValidationHookHandler,
   preHandlerHookHandler,
   FastifyInstance
@@ -30,5 +29,5 @@ export interface FastifyBasicAuthOptions {
   header?: string;
 }
 
-declare const fastifyBasicAuth: FastifyPlugin<FastifyBasicAuthOptions>
+declare const fastifyBasicAuth: FastifyPluginAsync<FastifyBasicAuthOptions>
 export default fastifyBasicAuth;

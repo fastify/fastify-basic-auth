@@ -3,11 +3,11 @@
   "version": "4.0.0",
   "description": "Fastify basic auth plugin",
   "main": "index.js",
-  "types": "index.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "lint": "standard",
     "test": "npm run test:unit && npm run test:types",
-    "test:unit": "tap test.js",
+    "test:unit": "tap",
     "test:types": "tsd"
   },
   "repository": {
