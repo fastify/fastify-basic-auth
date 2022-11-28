@@ -10,7 +10,7 @@ const MissingOrBadAuthorizationHeader = createError(
   401
 )
 
-async function basicPlugin (fastify, opts) {
+async function fastifyBasicAuth (fastify, opts) {
   if (typeof opts.validate !== 'function') {
     throw new Error('Basic Auth: Missing validate function')
   }
@@ -80,7 +80,9 @@ function getAuthenticateHeader (authenticate) {
   throw new Error('Basic Auth: Invalid authenticate option')
 }
 
-module.exports = fp(basicPlugin, {
+module.exports = fp(fastifyBasicAuth, {
   fastify: '4.x',
   name: '@fastify/basic-auth'
 })
+module.exports.default = fastifyBasicAuth
+module.exports.fastifyBasicAuth = fastifyBasicAuth
