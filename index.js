@@ -31,7 +31,7 @@ const authScheme = '(?:[Bb][Aa][Ss][Ii][Cc])'
  *
  * @see https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.3
  */
-const BWS = '[ \t]*'
+// const BWS = '[ \t]*'
 /**
  * The token68 syntax allows the 66 unreserved URI characters
  * ([RFC3986]), plus a few others, so that it can hold a base64,
@@ -42,7 +42,10 @@ const BWS = '[ \t]*'
  */
 const token68 = '+([A-Za-z0-9._~+/-]+=*)'
 
-const credentialsRE = new RegExp(`^${BWS}${authScheme} ${token68}${BWS}$`)
+/**
+ * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
+ */
+const credentialsRE = new RegExp(`^${authScheme} ${token68}$`)
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
