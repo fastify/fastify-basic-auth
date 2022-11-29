@@ -40,14 +40,14 @@ const BWS = '[ \t]*'
  * ([RFC4648]).
  * @see https://datatracker.ietf.org/doc/html/rfc7235#section-2.1
  */
-const token68 = '+([A-Za-z0-9._~+/-]+=*)'
+const token68 = '([A-Za-z0-9._~+/-]+=*)'
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
  */
 const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`)
 
-const credentialsLaxRE = new RegExp(`^${BWS}${authScheme} ${token68}${BWS}$`)
+const credentialsLaxRE = new RegExp(`^${BWS}${authScheme} +${token68}${BWS}$`)
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
