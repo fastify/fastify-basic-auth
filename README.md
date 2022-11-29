@@ -129,12 +129,13 @@ be used. If utf8 is set to true the server will send the 'charset' parameter
 to indicate a preference of "UTF-8", increasing the probability that
 clients will switch to that encoding.
 
-### `strict` <Boolean> (optional, default: true)
+### `strictCredentials` <Boolean> (optional, default: true)
 
-If strict is set to false the authorization header can contain additional
-whitespaces at the beginning and the end of the authorization header. This is a
-fallback option to ensure the same behaviour as @fastify/basic-auth version
-<=5.x.
+If strictCredentials is set to false the authorization header can contain
+additional whitespaces at the beginning, in the midde and at the end of the
+authorization header.
+This is a fallback option to ensure the same behaviour as @fastify/basic-auth
+version <=5.x.
 
 ### `validate` <Function> (required)
 

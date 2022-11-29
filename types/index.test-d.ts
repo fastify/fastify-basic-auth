@@ -69,7 +69,7 @@ app.register(fastifyBasicAuth, {
 
 app.register(fastifyBasicAuth, {
   validate: () => {},
-  strict: true
+  strictCredentials: true
 })
 
 app.register(fastifyBasicAuth, {

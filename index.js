@@ -31,7 +31,7 @@ const authScheme = '(?:[Bb][Aa][Ss][Ii][Cc])'
  *
  * @see https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.3
  */
-const BWS = '[ \t]*'
+const BWS = '[ \t]'
 /**
  * The token68 syntax allows the 66 unreserved URI characters
  * ([RFC3986]), plus a few others, so that it can hold a base64,
@@ -47,7 +47,7 @@ const token68 = '([A-Za-z0-9._~+/-]+=*)'
  */
 const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`)
 
-const credentialsLaxRE = new RegExp(`^${BWS}${authScheme} +${token68}${BWS}$`)
+const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS}*$`)
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
@@ -70,13 +70,13 @@ async function fastifyBasicAuth (fastify, opts) {
     throw new Error('Basic Auth: Missing validate function')
   }
 
-  const strict = opts.strict ?? true
+  const strictCredentials = opts.strictCredentials ?? true
   const useUtf8 = opts.utf8 ?? true
   const charset = useUtf8 ? 'utf-8' : 'ascii'
   const authenticateHeader = getAuthenticateHeader(opts.authenticate, useUtf8)
   const header = (opts.header && opts.header.toLowerCase()) || 'authorization'
 
-  const credentialsRE = strict
+  const credentialsRE = strictCredentials
     ? credentialsStrictRE
     : credentialsLaxRE
 
@@ -160,7 +160,6 @@ function getAuthenticateHeader (authenticate, useUtf8) {
           ? () => `Basic realm="${realm}", charset="UTF-8"`
           : () => `Basic realm="${realm}"`
       case 'function':
-
         return useUtf8
           ? (req) => `Basic realm="${realm(req)}", charset="UTF-8"`
           : (req) => `Basic realm="${realm(req)}"`

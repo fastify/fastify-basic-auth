@@ -298,11 +298,11 @@ test('Basic - Invalid Header value /3', t => {
   })
 })
 
-test('Basic - strict: false', t => {
+test('Basic - strictCredentials: false', t => {
   t.plan(2)
 
   const fastify = Fastify()
-  fastify.register(basicAuth, { validate, strict: false })
+  fastify.register(basicAuth, { validate, strictCredentials: false })
 
   function validate (username, password, req, res, done) {
     if (username === 'user' && password === 'pwd') {
