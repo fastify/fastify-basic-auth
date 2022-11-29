@@ -36,8 +36,6 @@ app.register(fastifyBasicAuth, {
   header: 'x-forwarded-authorization'
 })
 
-
-
 app.register(fastifyBasicAuth, {
   validate: function validateCallback (username, password, req, reply, done) {
     expectType<string>(username)
@@ -67,6 +65,16 @@ app.register(fastifyBasicAuth, {
   authenticate: { realm: function realm(req) {
     return req.routerPath
   }}
+})
+
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  strict: true
+})
+
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  utf8: true
 })
 
 expectAssignable<onRequestHookHandler>(app.basicAuth)

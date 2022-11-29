@@ -71,7 +71,9 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 
   const strict = opts.strict ?? true
-  const authenticateHeader = getAuthenticateHeader(opts.authenticate)
+  const useUtf8 = opts.utf8 ?? true
+  const charset = useUtf8 ? 'utf-8' : 'ascii'
+  const authenticateHeader = getAuthenticateHeader(opts.authenticate, useUtf8)
   const header = (opts.header && opts.header.toLowerCase()) || 'authorization'
 
   const credentialsRE = strict
@@ -97,7 +99,7 @@ async function fastifyBasicAuth (fastify, opts) {
     }
 
     // decode user pass
-    const credentialsDecoded = Buffer.from(match[1], 'base64').toString()
+    const credentialsDecoded = Buffer.from(match[1], 'base64').toString(charset)
 
     /**
      * The user-id and password MUST NOT contain any control characters (see
@@ -128,14 +130,7 @@ async function fastifyBasicAuth (fastify, opts) {
         }
 
         if (err.statusCode === 401) {
-          switch (typeof authenticateHeader) {
-            case 'string':
-              reply.header('WWW-Authenticate', authenticateHeader)
-              break
-            case 'function':
-              reply.header('WWW-Authenticate', authenticateHeader(req))
-              break
-          }
+          reply.header('WWW-Authenticate', authenticateHeader(req))
         }
         next(err)
       } else {
@@ -145,24 +140,30 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 }
 
-function getAuthenticateHeader (authenticate) {
-  if (!authenticate) return false
+function getAuthenticateHeader (authenticate, useUtf8) {
+  if (!authenticate) return () => false
   if (authenticate === true) {
-    return 'Basic'
+    return useUtf8
+      ? () => 'Basic charset="UTF-8"'
+      : () => 'Basic'
   }
   if (typeof authenticate === 'object') {
     const realm = authenticate.realm
     switch (typeof realm) {
       case 'undefined':
-        return 'Basic'
       case 'boolean':
-        return 'Basic'
+        return useUtf8
+          ? () => 'Basic charset="UTF-8"'
+          : () => 'Basic'
       case 'string':
-        return `Basic realm="${realm}"`
+        return useUtf8
+          ? () => `Basic realm="${realm}", charset="UTF-8"`
+          : () => `Basic realm="${realm}"`
       case 'function':
-        return function (req) {
-          return `Basic realm="${realm(req)}"`
-        }
+
+        return useUtf8
+          ? (req) => `Basic realm="${realm(req)}", charset="UTF-8"`
+          : (req) => `Basic realm="${realm(req)}"`
     }
   }
 
