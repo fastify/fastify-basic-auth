@@ -123,7 +123,7 @@ fastify.setErrorHandler(function (err, req, reply) {
 ### `utf8` <Boolean> (optional, default: true)
 
 User-ids or passwords containing characters outside the US-ASCII
-character repertoire will cause interoperability issues, unless both
+character set will cause interoperability issues, unless both
 communication partners agree on what character encoding scheme is to
 be used. If utf8 is set to true the server will send the 'charset' parameter
 to indicate a preference of "UTF-8", increasing the probability that
