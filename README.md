@@ -120,6 +120,22 @@ fastify.setErrorHandler(function (err, req, reply) {
 
 ## Options
 
+### `utf8` <Boolean> (optional, default: true)
+
+User-ids or passwords containing characters outside the US-ASCII
+character repertoire will cause interoperability issues, unless both
+communication partners agree on what character encoding scheme is to
+be used. If utf8 is set to true the server will send the 'charset' parameter
+to indicate a preference of "UTF-8", increasing the probability that
+clients will switch to that encoding.
+
+### `strict` <Boolean> (optional, default: true)
+
+If strict is set to false the authorization header can contain additional
+whitespaces at the beginning and the end of the authorization header. This is a
+fallback option to ensure the same behaviour as @fastify/basic-auth version
+<=5.x.
+
 ### `validate` <Function> (required)
 
 The `validate` function is called on each request made,
