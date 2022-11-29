@@ -1,6 +1,6 @@
 {
   "name": "@fastify/basic-auth",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Fastify basic auth plugin",
   "main": "index.js",
   "types": "types/index.d.ts",
