@@ -134,7 +134,7 @@ clients will switch to that encoding.
 If strictCredentials is set to false the authorization header can contain
 additional whitespaces at the beginning, in the midde and at the end of the
 authorization header.
-This is a fallback option to ensure the same behaviour as @fastify/basic-auth
+This is a fallback option to ensure the same behaviour as `@fastify/basic-auth`
 version <=5.x.
 
 ### `validate` <Function> (required)
