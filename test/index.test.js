@@ -84,6 +84,135 @@ test('Basic - 401', t => {
   })
 })
 
+test('Basic - Invalid Header value /1', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: 'Bearer ' + Buffer.from('user:pass').toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
+      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+      error: 'Unauthorized',
+      message: 'Missing or bad formatted authorization header',
+      statusCode: 401
+    })
+  })
+})
+
+test('Basic - Invalid Header value /2', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: 'Basic ' + Buffer.from('user').toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
+      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+      error: 'Unauthorized',
+      message: 'Missing or bad formatted authorization header',
+      statusCode: 401
+    })
+  })
+})
+
+test('Basic - Invalid Header value /3', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: 'Basic ' + Buffer.from('user\x00:password').toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 401)
+    t.same(JSON.parse(res.payload), {
+      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+      error: 'Unauthorized',
+      message: 'Missing or bad formatted authorization header',
+      statusCode: 401
+    })
+  })
+})
+
 test('Basic with promises', t => {
   t.plan(2)
 

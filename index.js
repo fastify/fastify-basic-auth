@@ -1,7 +1,6 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const auth = require('basic-auth')
 const createError = require('@fastify/error')
 
 const MissingOrBadAuthorizationHeader = createError(
@@ -9,6 +8,57 @@ const MissingOrBadAuthorizationHeader = createError(
   'Missing or bad formatted authorization header',
   401
 )
+
+/**
+ * HTTP provides a simple challenge-response authentication framework
+ * that can be used by a server to challenge a client request and by a
+ * client to provide authentication information.  It uses a case-
+ * insensitive token as a means to identify the authentication scheme,
+ * followed by additional information necessary for achieving
+ * authentication via that scheme.
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc7235#section-2.1
+ *
+ * The scheme name is "Basic".
+ * @see https://datatracker.ietf.org/doc/html/rfc7617#section-2
+ */
+const authScheme = '(?:[Bb][Aa][Ss][Ii][Cc])'
+/**
+ * The BWS rule is used where the grammar allows optional whitespace
+ * only for historical reasons.  A sender MUST NOT generate BWS in
+ * messages.  A recipient MUST parse for such bad whitespace and remove
+ * it before interpreting the protocol element.
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.3
+ */
+const BWS = '[ \t]*'
+/**
+ * The token68 syntax allows the 66 unreserved URI characters
+ * ([RFC3986]), plus a few others, so that it can hold a base64,
+ * base64url (URL and filename safe alphabet), base32, or base16 (hex)
+ * encoding, with or without padding, but excluding whitespace
+ * ([RFC4648]).
+ * @see https://datatracker.ietf.org/doc/html/rfc7235#section-2.1
+ */
+const token68 = '+([A-Za-z0-9._~+/-]+=*)'
+
+const credentialsRE = new RegExp(`^${BWS}${authScheme} ${token68}${BWS}$`)
+
+/**
+ * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
+ */
+const CTL = '[\x00-\x1F\x7F]'
+const controlRE = new RegExp(CTL)
+
+/**
+ * RegExp for basic auth user/pass
+ *
+ * user-pass   = userid ":" password
+ * userid      = *<TEXT excluding ":">
+ * password    = *TEXT
+ */
+
+const userPassRE = /^([^:]*):(.*)$/
 
 async function fastifyBasicAuth (fastify, opts) {
   if (typeof opts.validate !== 'function') {
@@ -21,14 +71,42 @@ async function fastifyBasicAuth (fastify, opts) {
   fastify.decorate('basicAuth', basicAuth)
 
   function basicAuth (req, reply, next) {
-    const credentials = auth.parse(req.headers[header])
-    if (credentials == null) {
+    const credentials = req.headers[header]
+
+    if (typeof credentials !== 'string') {
       done(new MissingOrBadAuthorizationHeader())
-    } else {
-      const result = validate(credentials.name, credentials.pass, req, reply, done)
-      if (result && typeof result.then === 'function') {
-        result.then(done, done)
-      }
+      return
+    }
+
+    // parse header
+    const match = credentialsRE.exec(credentials)
+    if (match === null) {
+      done(new MissingOrBadAuthorizationHeader())
+      return
+    }
+
+    // decode user pass
+    const credentialsDecoded = Buffer.from(match[1], 'base64').toString()
+
+    /**
+     * The user-id and password MUST NOT contain any control characters (see
+     * "CTL" in Appendix B.1 of [RFC5234]).
+     * @see https://datatracker.ietf.org/doc/html/rfc7617#section-2
+     */
+    if (controlRE.test(credentialsDecoded)) {
+      done(new MissingOrBadAuthorizationHeader())
+      return
+    }
+
+    const userPass = userPassRE.exec(credentialsDecoded)
+    if (userPass === null) {
+      done(new MissingOrBadAuthorizationHeader())
+      return
+    }
+
+    const result = validate(userPass[1], userPass[2], req, reply, done)
+    if (result && typeof result.then === 'function') {
+      result.then(done, done)
     }
 
     function done (err) {
