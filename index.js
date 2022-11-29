@@ -31,7 +31,7 @@ const authScheme = '(?:[Bb][Aa][Ss][Ii][Cc])'
  *
  * @see https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.3
  */
-// const BWS = '[ \t]*'
+const BWS = '[ \t]*'
 /**
  * The token68 syntax allows the 66 unreserved URI characters
  * ([RFC3986]), plus a few others, so that it can hold a base64,
@@ -45,7 +45,9 @@ const token68 = '+([A-Za-z0-9._~+/-]+=*)'
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
  */
-const credentialsRE = new RegExp(`^${authScheme} ${token68}$`)
+const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`)
+
+const credentialsLaxRE = new RegExp(`^${BWS}${authScheme} ${token68}${BWS}$`)
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
@@ -67,8 +69,14 @@ async function fastifyBasicAuth (fastify, opts) {
   if (typeof opts.validate !== 'function') {
     throw new Error('Basic Auth: Missing validate function')
   }
+
+  const strict = opts.strict ?? true
   const authenticateHeader = getAuthenticateHeader(opts.authenticate)
   const header = (opts.header && opts.header.toLowerCase()) || 'authorization'
+
+  const credentialsRE = strict
+    ? credentialsStrictRE
+    : credentialsLaxRE
 
   const validate = opts.validate.bind(fastify)
   fastify.decorate('basicAuth', basicAuth)

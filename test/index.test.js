@@ -199,7 +199,7 @@ test('Basic - Invalid Header value /3', t => {
     url: '/',
     method: 'GET',
     headers: {
-      authorization: 'Basic ' + Buffer.from('user\x00:password').toString('base64')
+      authorization: 'Basic ' + Buffer.from('user\x00:pwd').toString('base64')
     }
   }, (err, res) => {
     t.error(err)
@@ -210,6 +210,43 @@ test('Basic - Invalid Header value /3', t => {
       message: 'Missing or bad formatted authorization header',
       statusCode: 401
     })
+  })
+})
+
+test('Basic - strict: false', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.register(basicAuth, { validate, strict: false })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Winter is coming'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: '      Basic ' + Buffer.from('user:pwd').toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
   })
 })
 
