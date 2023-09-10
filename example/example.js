@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('fastify')()
-const crypto = require('crypto')
+const crypto = require('node:crypto')
 const authenticate = { realm: 'Westeros' }
 
 const validUsername = 'Tyrion'
