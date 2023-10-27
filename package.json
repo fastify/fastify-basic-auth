@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "Fastify basic auth plugin",
   "main": "index.js",
+  "type": "commonjs",
   "types": "types/index.d.ts",
   "scripts": {
     "lint": "standard",
