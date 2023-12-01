@@ -130,7 +130,10 @@ async function fastifyBasicAuth (fastify, opts) {
         }
 
         if (err.statusCode === 401) {
-          reply.header('WWW-Authenticate', authenticateHeader(req))
+          const header = authenticateHeader(req)
+          if (header) {
+            reply.header('WWW-Authenticate', header)
+          }
         }
         next(err)
       } else {
