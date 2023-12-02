@@ -462,6 +462,54 @@ test('WWW-Authenticate (authenticate: true)', t => {
   })
 })
 
+test('WWW-Authenticate (authenticate: false)', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  const authenticate = false
+  fastify.register(basicAuth, { validate, authenticate, utf8: false })
+
+  function validate (username, password, req, res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.headers['www-authenticate'], undefined)
+    t.equal(res.statusCode, 401)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.headers['www-authenticate'], undefined)
+    t.equal(res.statusCode, 200)
+  })
+})
+
 test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', t => {
   t.plan(6)
 
