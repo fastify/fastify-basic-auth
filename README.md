@@ -102,7 +102,7 @@ fastify.after(() => {
 
 On failed authentication, *@fastify/basic-auth* will call the Fastify
 [generic error
-handler](https://fastify.dev/docs/latest/Server/#seterrorhandler) with an error.
+handler](https://fastify.dev/docs/latest/Reference/Server/#seterrorhandler) with an error.
 *@fastify/basic-auth* sets the `err.statusCode` property to `401`.
 
 In order to properly `401` errors:
