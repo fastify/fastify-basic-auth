@@ -38,7 +38,7 @@
     "tsd": "^0.30.7"
   },
   "dependencies": {
-    "@fastify/error": "^3.4.1",
+    "@fastify/error": "^4.0.0",
     "fastify-plugin": "^4.5.1"
   },
   "publishConfig": {
