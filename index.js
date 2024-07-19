@@ -22,7 +22,7 @@ const MissingOrBadAuthorizationHeader = createError(
  * The scheme name is "Basic".
  * @see https://datatracker.ietf.org/doc/html/rfc7617#section-2
  */
-const authScheme = '(?:[Bb][Aa][Ss][Ii][Cc])'
+const authScheme = '(?:basic)'
 /**
  * The BWS rule is used where the grammar allows optional whitespace
  * only for historical reasons.  A sender MUST NOT generate BWS in
@@ -40,14 +40,14 @@ const BWS = '[ \t]'
  * ([RFC4648]).
  * @see https://datatracker.ietf.org/doc/html/rfc7235#section-2.1
  */
-const token68 = '([A-Za-z0-9._~+/-]+=*)'
+const token68 = '([\\w.~+/-]+=*)'
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
  */
-const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`)
+const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`, 'i')
 
-const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS}*$`)
+const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS}*$`, 'i')
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
