@@ -40,7 +40,7 @@ const BWS = '[ \t]'
  * ([RFC4648]).
  * @see https://datatracker.ietf.org/doc/html/rfc7235#section-2.1
  */
-const token68 = '([a-z0-9._~+/-]+=*)'
+const token68 = '([\\w.~+/-]+=*)'
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
