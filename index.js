@@ -173,7 +173,7 @@ function getAuthenticateHeader (authenticate, useUtf8) {
 }
 
 module.exports = fp(fastifyBasicAuth, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: '@fastify/basic-auth'
 })
 module.exports.default = fastifyBasicAuth
