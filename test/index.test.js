@@ -1,21 +1,19 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('fastify')
 const basicAuth = require('..')
 const fastifyAuth = require('@fastify/auth')
 
-test('Basic', t => {
+test('Basic', async t => {
   t.plan(2)
 
   const fastify = Fastify()
-  fastify.register(basicAuth, { validate })
+  await fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
-    if (username === 'user' && password === 'pwd') {
-      done()
-    } else {
-      done(new Error('Unauthorized'))
+  async function validate (username, password, req, res) {
+    if (username !== 'user' && password !== 'pwd') {
+      return new Error('Unauthorized')
     }
   }
 
@@ -30,19 +28,19 @@ test('Basic', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('Basic utf8: true', t => {
+test('Basic utf8: true', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -67,7 +65,7 @@ test('Basic utf8: true', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
@@ -76,13 +74,13 @@ test('Basic utf8: true', t => {
        */
       authorization: 'Basic dGVzdDoxMjPCow=='
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('Basic - 401, sending utf8 credentials base64 but utf8: false', t => {
+test('Basic - 401, sending utf8 credentials base64 but utf8: false', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -107,7 +105,7 @@ test('Basic - 401, sending utf8 credentials base64 but utf8: false', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
@@ -116,18 +114,18 @@ test('Basic - 401, sending utf8 credentials base64 but utf8: false', t => {
       */
       authorization: 'Basic dGVzdDoxMjPCow=='
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Unauthorized',
-      statusCode: 401
-    })
+  })
+
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Unauthorized',
+    statusCode: 401
   })
 })
 
-test('Basic - 401', t => {
+test('Basic - 401', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -152,24 +150,23 @@ test('Basic - 401', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('Basic - Invalid Header value /1', t => {
+test('Basic - Invalid Header value /1', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -194,25 +191,24 @@ test('Basic - Invalid Header value /1', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: 'Bearer ' + Buffer.from('user:pass').toString('base64')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-      error: 'Unauthorized',
-      message: 'Missing or bad formatted authorization header',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    error: 'Unauthorized',
+    message: 'Missing or bad formatted authorization header',
+    statusCode: 401
   })
 })
 
-test('Basic - Invalid Header value /2', t => {
+test('Basic - Invalid Header value /2', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -237,25 +233,24 @@ test('Basic - Invalid Header value /2', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: 'Basic ' + Buffer.from('user').toString('base64')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-      error: 'Unauthorized',
-      message: 'Missing or bad formatted authorization header',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    error: 'Unauthorized',
+    message: 'Missing or bad formatted authorization header',
+    statusCode: 401
   })
 })
 
-test('Basic - Invalid Header value /3', t => {
+test('Basic - Invalid Header value /3', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -280,25 +275,24 @@ test('Basic - Invalid Header value /3', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: 'Basic ' + Buffer.from('user\x00:pwd').toString('base64')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-      error: 'Unauthorized',
-      message: 'Missing or bad formatted authorization header',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    error: 'Unauthorized',
+    message: 'Missing or bad formatted authorization header',
+    statusCode: 401
   })
 })
 
-test('Basic - strictCredentials: false', t => {
+test('Basic - strictCredentials: false', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -323,19 +317,18 @@ test('Basic - strictCredentials: false', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: '      Basic ' + Buffer.from('user:pwd').toString('base64')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('Basic with promises', t => {
+test('Basic with promises', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -360,19 +353,18 @@ test('Basic with promises', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('Basic with promises - 401', t => {
+test('Basic with promises - 401', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -397,24 +389,23 @@ test('Basic with promises - 401', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('WWW-Authenticate (authenticate: true)', t => {
+test('WWW-Authenticate (authenticate: true)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -440,29 +431,27 @@ test('WWW-Authenticate (authenticate: true)', t => {
     })
   })
 
-  fastify.inject({
+  const res1 = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['www-authenticate'], 'Basic')
+  t.assert.strictEqual(res1.statusCode, 401)
 
-  fastify.inject({
+  const res2 = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('WWW-Authenticate (authenticate: false)', t => {
+test('WWW-Authenticate (authenticate: false)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -488,29 +477,27 @@ test('WWW-Authenticate (authenticate: false)', t => {
     })
   })
 
-  fastify.inject({
+  const res1 = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res1.statusCode, 401)
 
-  fastify.inject({
+  const res2 = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', t => {
+test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -536,29 +523,27 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', t
     })
   })
 
-  fastify.inject({
+  const res1 = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic realm="example"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['www-authenticate'], 'Basic realm="example"')
+  t.assert.strictEqual(res1.statusCode, 401)
 
-  fastify.inject({
+  const res2 = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', t => {
+test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -584,29 +569,27 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', t 
     })
   })
 
-  fastify.inject({
+  const res1 = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic realm="example", charset="UTF-8"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['www-authenticate'], 'Basic realm="example", charset="UTF-8"')
+  t.assert.strictEqual(res1.statusCode, 401)
 
-  fastify.inject({
+  const res2 = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('Header option specified', t => {
+test('Header option specified', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -634,31 +617,34 @@ test('Header option specified', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('notuser', 'notpwd'),
       'x-forwarded-authorization': basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('Missing validate function', t => {
-  t.plan(1)
+test('Missing validate function', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
   fastify.register(basicAuth)
 
-  fastify.ready(err => {
-    t.equal(err.message, 'Basic Auth: Missing validate function')
-  })
+  await t.assert.rejects(
+    async () => fastify.ready(),
+    (err) => {
+      t.assert.strictEqual(err.message, 'Basic Auth: Missing validate function')
+      return true
+    }
+  )
 })
 
-test('Hook - 401', t => {
+test('Hook - 401', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -684,24 +670,23 @@ test('Hook - 401', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('With @fastify/auth - 401', t => {
+test('With @fastify/auth - 401', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -728,24 +713,23 @@ test('With @fastify/auth - 401', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('Hook with @fastify/auth- 401', t => {
+test('Hook with @fastify/auth- 401', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -772,24 +756,23 @@ test('Hook with @fastify/auth- 401', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('Missing header', t => {
+test('Missing header', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -814,22 +797,21 @@ test('Missing header', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 401,
-      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-      error: 'Unauthorized',
-      message: 'Missing or bad formatted authorization header'
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    statusCode: 401,
+    code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    error: 'Unauthorized',
+    message: 'Missing or bad formatted authorization header'
   })
 })
 
-test('Fastify context', t => {
+test('Fastify context', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -837,7 +819,7 @@ test('Fastify context', t => {
   fastify.register(basicAuth, { validate })
 
   function validate (username, password, req, res, done) {
-    t.ok(this.test)
+    t.assert.ok(this.test)
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -856,19 +838,18 @@ test('Fastify context', t => {
     })
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 200)
 })
 
-test('setErrorHandler custom error and 401', t => {
+test('setErrorHandler custom error and 401', async t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -892,28 +873,27 @@ test('setErrorHandler custom error and 401', t => {
   })
 
   fastify.setErrorHandler(function (err, req, reply) {
-    t.equal(err.statusCode, 401)
+    t.assert.strictEqual(err.statusCode, 401)
     reply.send(err)
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      error: 'Unauthorized',
-      message: 'Winter is coming',
-      statusCode: 401
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Unauthorized',
+    message: 'Winter is coming',
+    statusCode: 401
   })
 })
 
-test('Missing header and custom error handler', t => {
+test('Missing header and custom error handler', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -939,48 +919,49 @@ test('Missing header and custom error handler', t => {
   })
 
   fastify.setErrorHandler(function (err, req, reply) {
-    t.ok(err instanceof Error)
-    t.ok(err.statusCode === 401)
-    t.ok(err.code === 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER')
+    t.assert.ok(err instanceof Error)
+    t.assert.ok(err.statusCode === 401)
+    t.assert.ok(err.code === 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER')
     reply.send(err)
   })
 
-  fastify.inject({
+  const { statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 401)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 401,
-      code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-      error: 'Unauthorized',
-      message: 'Missing or bad formatted authorization header'
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 401)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    statusCode: 401,
+    code: 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    error: 'Unauthorized',
+    message: 'Missing or bad formatted authorization header'
   })
 })
 
-test('Invalid options (authenticate)', t => {
-  t.plan(1)
+test('Invalid options (authenticate)', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
   fastify
     .register(basicAuth, { validate, authenticate: 'i am invalid' })
 
-  function validate (username, password, req, res, done) {
-    if (username === 'user' && password === 'pwd') {
-      done()
-    } else {
-      done(new Error('Unauthorized'))
+  async function validate (username, password, req, res) {
+    if (username !== 'user' && password !== 'pwd') {
+      return new Error('Unauthorized')
     }
   }
 
-  fastify.ready(function (err) {
-    t.equal(err.message, 'Basic Auth: Invalid authenticate option')
-  })
+  await t.assert.rejects(
+    async () => fastify.ready(),
+    (err) => {
+      t.assert.strictEqual(err.message, 'Basic Auth: Invalid authenticate option')
+      return true
+    }
+  )
 })
 
-test('authenticate: true, utf8: true', t => {
+test('authenticate: true, utf8: true', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1006,29 +987,27 @@ test('authenticate: true, utf8: true', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('authenticate realm: false, utf8: true', t => {
+test('authenticate realm: false, utf8: true', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1054,33 +1033,31 @@ test('authenticate realm: false, utf8: true', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Invalid options (authenticate realm, utf8: false)', t => {
+test('Invalid options (authenticate realm, utf8: false)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
-  fastify
+  await fastify
     .register(basicAuth, { validate, authenticate: { realm: true }, utf8: false })
 
   function validate (username, password, req, res, done) {
@@ -1102,29 +1079,27 @@ test('Invalid options (authenticate realm, utf8: false)', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Invalid options (authenticate realm), utf8: true', t => {
+test('Invalid options (authenticate realm), utf8: true', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1150,29 +1125,27 @@ test('Invalid options (authenticate realm), utf8: true', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic charset="UTF-8"')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Invalid options (authenticate realm = undefined, utf8: false)', t => {
+test('Invalid options (authenticate realm = undefined, utf8: false)', async t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1198,35 +1171,33 @@ test('Invalid options (authenticate realm = undefined, utf8: false)', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('WWW-Authenticate Realm (authenticate: {realm (req) { }}, utf8: false)', t => {
+test('WWW-Authenticate Realm (authenticate: {realm (req) { }}, utf8: false)', async t => {
   t.plan(7)
 
   const fastify = Fastify()
   const authenticate = {
     realm (req) {
-      t.equal(req.url, '/')
+      t.assert.strictEqual(req.url, '/')
       return 'root'
     }
   }
@@ -1251,35 +1222,33 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}, utf8: false)', t 
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic realm="root"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic realm="root"')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('WWW-Authenticate Realm (authenticate: {realm (req) { }}), utf8', t => {
+test('WWW-Authenticate Realm (authenticate: {realm (req) { }}), utf8', async t => {
   t.plan(7)
 
   const fastify = Fastify()
   const authenticate = {
     realm (req) {
-      t.equal(req.url, '/')
+      t.assert.strictEqual(req.url, '/')
       return 'root'
     }
   }
@@ -1304,29 +1273,27 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}), utf8', t => {
     })
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], 'Basic realm="root", charset="UTF-8"')
-    t.equal(res.statusCode, 401)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], 'Basic realm="root", charset="UTF-8"')
+  t.assert.strictEqual(res.statusCode, 401)
 
-  fastify.inject({
+  res = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.ok(res.body)
+  t.assert.strictEqual(res.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('No 401 no realm', t => {
+test('No 401 no realm', async t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -1349,21 +1316,20 @@ test('No 401 no realm', t => {
     })
   })
 
-  fastify.inject({
+  const { headers, statusCode, body } = await fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
       authorization: basicAuthHeader('user', 'pwdd')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 402)
-    t.equal(res.headers['www-authenticate'], undefined)
-    t.same(JSON.parse(res.payload), {
-      error: 'Payment Required',
-      message: 'Winter is coming',
-      statusCode: 402
-    })
+  })
+  t.assert.ok(body)
+  t.assert.strictEqual(statusCode, 402)
+  t.assert.strictEqual(headers['www-authenticate'], undefined)
+  t.assert.deepStrictEqual(JSON.parse(body), {
+    error: 'Payment Required',
+    message: 'Winter is coming',
+    statusCode: 402
   })
 })
 

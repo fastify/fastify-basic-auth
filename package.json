@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "standard",
     "test": "npm run test:unit && npm run test:types",
-    "test:unit": "tap",
+    "test:unit": "c8 --100 node --test",
     "test:types": "tsd"
   },
   "repository": {
@@ -32,9 +32,9 @@
     "@fastify/auth": "^5.0.0-pre.fv5.1",
     "@fastify/pre-commit": "^2.1.0",
     "@types/node": "^22.0.0",
+    "c8": "^10.1.2",
     "fastify": "^5.0.0-alpha.3",
     "standard": "^17.1.0",
-    "tap": "^18.7.1",
     "tsd": "^0.31.1"
   },
   "dependencies": {
