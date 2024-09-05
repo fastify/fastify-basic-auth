@@ -63,7 +63,7 @@ app.register(fastifyBasicAuth, {
 app.register(fastifyBasicAuth, {
   validate: () => {},
   authenticate: { realm: function realm(req) {
-    return req.routerPath
+    return req.url
   }}
 })
 
