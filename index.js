@@ -52,8 +52,7 @@ const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
  */
-const CTL = '[\x00-\x1F\x7F]'
-const controlRE = new RegExp(CTL)
+const controlRE = /[\x00-\x1F\x7F]/
 
 /**
  * RegExp for basic auth user/pass
