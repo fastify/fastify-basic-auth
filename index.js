@@ -52,6 +52,7 @@ const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
  */
+// eslint-disable-next-line no-control-regex
 const controlRE = /[\x00-\x1F\x7F]/
 
 /**
