@@ -38,5 +38,5 @@ declare namespace fastifyBasicAuth {
   export { fastifyBasicAuth as default }
 }
 
-declare function fastifyBasicAuth(...params: Parameters<FastifyBasicAuth>): ReturnType<FastifyBasicAuth>
+declare function fastifyBasicAuth (...params: Parameters<FastifyBasicAuth>): ReturnType<FastifyBasicAuth>
 export = fastifyBasicAuth

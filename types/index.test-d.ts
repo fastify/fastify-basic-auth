@@ -11,7 +11,7 @@ import fastifyBasicAuth from '..'
 
 const app = fastify()
 
-//validation ok
+// validation ok
 app.register(fastifyBasicAuth, {
   validate: async function validatePromise (username, password, req, reply) {
     expectType<string>(username)
@@ -23,7 +23,7 @@ app.register(fastifyBasicAuth, {
   header: 'x-forwarded-authorization'
 })
 
-//validation failure
+// validation failure
 app.register(fastifyBasicAuth, {
   validate: async function validatePromise (username, password, req, reply) {
     expectType<string>(username)
@@ -31,7 +31,7 @@ app.register(fastifyBasicAuth, {
     expectType<FastifyRequest>(req)
     expectType<FastifyReply>(reply)
     expectType<FastifyInstance>(this)
-    return new Error("unauthorized")
+    return new Error('unauthorized')
   },
   header: 'x-forwarded-authorization'
 })
@@ -47,24 +47,26 @@ app.register(fastifyBasicAuth, {
   }
 })
 
-//authenticate boolean
+// authenticate boolean
 app.register(fastifyBasicAuth, {
   validate: () => {},
   authenticate: true
 })
 
-//authenticate with realm
+// authenticate with realm
 app.register(fastifyBasicAuth, {
   validate: () => {},
   authenticate: { realm: 'example' }
 })
 
-//authenticate with realm (function)
+// authenticate with realm (function)
 app.register(fastifyBasicAuth, {
   validate: () => {},
-  authenticate: { realm: function realm(req) {
-    return req.url
-  }}
+  authenticate: {
+    realm: function realm (req) {
+      return req.url
+    }
+  }
 })
 
 app.register(fastifyBasicAuth, {
