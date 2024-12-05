@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/fastify/fastify-basic-auth/workflows/CI/badge.svg?branch=master)
 [![NPM version](https://img.shields.io/npm/v/@fastify/basic-auth.svg?style=flat)](https://www.npmjs.com/package/@fastify/basic-auth)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
+[![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
  A simple basic auth plugin for Fastify.
 
