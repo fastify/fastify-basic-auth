@@ -11,7 +11,7 @@ test('Basic', async t => {
   const fastify = Fastify()
   await fastify.register(basicAuth, { validate })
 
-  async function validate (username, password, req, res) {
+  async function validate (username, password, _req, _res) {
     if (username !== 'user' && password !== 'pwd') {
       return new Error('Unauthorized')
     }
@@ -22,7 +22,7 @@ test('Basic', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -46,7 +46,7 @@ test('Basic utf8: true', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate, utf8: true })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'test' && password === '123\u00A3') {
       done()
     } else {
@@ -59,7 +59,7 @@ test('Basic utf8: true', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -86,7 +86,7 @@ test('Basic - 401, sending utf8 credentials base64 but utf8: false', async t => 
   const fastify = Fastify()
   fastify.register(basicAuth, { validate, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'test' && password === '123\u00A3') {
       done()
     } else {
@@ -99,7 +99,7 @@ test('Basic - 401, sending utf8 credentials base64 but utf8: false', async t => 
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -131,7 +131,7 @@ test('Basic - 401', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -144,7 +144,7 @@ test('Basic - 401', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -172,7 +172,7 @@ test('Basic - Invalid Header value /1', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -185,7 +185,7 @@ test('Basic - Invalid Header value /1', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -214,7 +214,7 @@ test('Basic - Invalid Header value /2', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -227,7 +227,7 @@ test('Basic - Invalid Header value /2', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -256,7 +256,7 @@ test('Basic - Invalid Header value /3', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -269,7 +269,7 @@ test('Basic - Invalid Header value /3', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -298,7 +298,7 @@ test('Basic - strictCredentials: false', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate, strictCredentials: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -311,7 +311,7 @@ test('Basic - strictCredentials: false', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -334,7 +334,7 @@ test('Basic with promises', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res) {
+  function validate (username, password, _req, _res) {
     if (username === 'user' && password === 'pwd') {
       return Promise.resolve()
     } else {
@@ -347,7 +347,7 @@ test('Basic with promises', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -370,7 +370,7 @@ test('Basic with promises - 401', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res) {
+  function validate (username, password, _req, _res) {
     if (username === 'user' && password === 'pwd') {
       return Promise.resolve()
     } else {
@@ -383,7 +383,7 @@ test('Basic with promises - 401', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -412,7 +412,7 @@ test('WWW-Authenticate (authenticate: true)', async t => {
   const authenticate = true
   fastify.register(basicAuth, { validate, authenticate, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -425,7 +425,7 @@ test('WWW-Authenticate (authenticate: true)', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -458,7 +458,7 @@ test('WWW-Authenticate (authenticate: false)', async t => {
   const authenticate = false
   fastify.register(basicAuth, { validate, authenticate, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -471,7 +471,7 @@ test('WWW-Authenticate (authenticate: false)', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -504,7 +504,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', a
   const authenticate = { realm: 'example' }
   fastify.register(basicAuth, { validate, authenticate, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -517,7 +517,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: false)', a
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -550,7 +550,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', as
   const authenticate = { realm: 'example' }
   fastify.register(basicAuth, { validate, authenticate, utf8: true })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -563,7 +563,7 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', as
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -598,7 +598,7 @@ test('Header option specified', async t => {
     header: 'X-Forwarded-Authorization'
   })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -611,7 +611,7 @@ test('Header option specified', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -651,7 +651,7 @@ test('Hook - 401', async t => {
   fastify
     .register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -664,7 +664,7 @@ test('Hook - 401', async t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -694,7 +694,7 @@ test('With @fastify/auth - 401', async t => {
     .register(fastifyAuth)
     .register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -707,7 +707,7 @@ test('With @fastify/auth - 401', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.auth([fastify.basicAuth]),
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -737,7 +737,7 @@ test('Hook with @fastify/auth- 401', async t => {
     .register(fastifyAuth)
     .register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -750,7 +750,7 @@ test('Hook with @fastify/auth- 401', async t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -778,7 +778,7 @@ test('Missing header', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -791,7 +791,7 @@ test('Missing header', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -818,7 +818,7 @@ test('Fastify context', async t => {
   fastify.decorate('test', true)
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     t.assert.ok(this.test)
     if (username === 'user' && password === 'pwd') {
       done()
@@ -832,7 +832,7 @@ test('Fastify context', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -857,7 +857,7 @@ test('setErrorHandler custom error and 401', async t => {
     .register(fastifyAuth)
     .register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (_username, _password, _req, _res, done) {
     done(new Error('Winter is coming'))
   }
 
@@ -866,13 +866,13 @@ test('setErrorHandler custom error and 401', async t => {
     fastify.route({
       method: 'GET',
       url: '/',
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
   })
 
-  fastify.setErrorHandler(function (err, req, reply) {
+  fastify.setErrorHandler(function (err, _req, reply) {
     t.assert.strictEqual(err.statusCode, 401)
     reply.send(err)
   })
@@ -899,7 +899,7 @@ test('Missing header and custom error handler', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -912,13 +912,13 @@ test('Missing header and custom error handler', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
   })
 
-  fastify.setErrorHandler(function (err, req, reply) {
+  fastify.setErrorHandler(function (err, _req, reply) {
     t.assert.ok(err instanceof Error)
     t.assert.ok(err.statusCode === 401)
     t.assert.ok(err.code === 'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER')
@@ -946,7 +946,7 @@ test('Invalid options (authenticate)', async t => {
   fastify
     .register(basicAuth, { validate, authenticate: 'i am invalid' })
 
-  async function validate (username, password, req, res) {
+  async function validate (username, password, _req, _res) {
     if (username !== 'user' && password !== 'pwd') {
       return new Error('Unauthorized')
     }
@@ -968,7 +968,7 @@ test('authenticate: true, utf8: true', async t => {
   fastify
     .register(basicAuth, { validate, authenticate: true, utf8: true })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -981,7 +981,7 @@ test('authenticate: true, utf8: true', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1014,7 +1014,7 @@ test('authenticate realm: false, utf8: true', async t => {
   fastify
     .register(basicAuth, { validate, authenticate: { realm: false }, utf8: true })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1027,7 +1027,7 @@ test('authenticate realm: false, utf8: true', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1060,7 +1060,7 @@ test('Invalid options (authenticate realm, utf8: false)', async t => {
   await fastify
     .register(basicAuth, { validate, authenticate: { realm: true }, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1073,7 +1073,7 @@ test('Invalid options (authenticate realm, utf8: false)', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1106,7 +1106,7 @@ test('Invalid options (authenticate realm), utf8: true', async t => {
   fastify
     .register(basicAuth, { validate, utf8: true, authenticate: { realm: true } })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1119,7 +1119,7 @@ test('Invalid options (authenticate realm), utf8: true', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1152,7 +1152,7 @@ test('Invalid options (authenticate realm = undefined, utf8: false)', async t =>
   fastify
     .register(basicAuth, { validate, authenticate: { realm: undefined }, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1165,7 +1165,7 @@ test('Invalid options (authenticate realm = undefined, utf8: false)', async t =>
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1203,7 +1203,7 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}, utf8: false)', as
   }
   fastify.register(basicAuth, { validate, authenticate, utf8: false })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1216,7 +1216,7 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}, utf8: false)', as
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1254,7 +1254,7 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}), utf8', async t =
   }
   fastify.register(basicAuth, { validate, authenticate, utf8: true })
 
-  function validate (username, password, req, res, done) {
+  function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
       done()
     } else {
@@ -1267,7 +1267,7 @@ test('WWW-Authenticate Realm (authenticate: {realm (req) { }}), utf8', async t =
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
@@ -1299,7 +1299,7 @@ test('No 401 no realm', async t => {
   const fastify = Fastify()
   fastify.register(basicAuth, { validate, authenticate: true })
 
-  function validate (username, password, req, res) {
+  function validate (_username, _password, _req, _res) {
     const err = new Error('Winter is coming')
     err.statusCode = 402
     return Promise.reject(err)
@@ -1310,7 +1310,7 @@ test('No 401 no realm', async t => {
       method: 'GET',
       url: '/',
       preHandler: fastify.basicAuth,
-      handler: (req, reply) => {
+      handler: (_req, reply) => {
         reply.send({ hello: 'world' })
       }
     })
