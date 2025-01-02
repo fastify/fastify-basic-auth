@@ -23,7 +23,7 @@ function compare (a, b) {
 }
 
 // `this` inside validate is `fastify`
-function validate (username, password, req, reply, done) {
+function validate (username, password, _req, _reply, done) {
   let result = true
   result = compare(username, validUsername) && result
   result = compare(password, validPassword) && result
@@ -37,7 +37,7 @@ function validate (username, password, req, reply, done) {
 fastify.after(() => {
   fastify.addHook('onRequest', fastify.basicAuth)
 
-  fastify.get('/', (req, reply) => {
+  fastify.get('/', (_req, reply) => {
     reply.send({ hello: 'world' })
   })
 })
