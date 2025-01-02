@@ -74,7 +74,7 @@ async function fastifyBasicAuth (fastify, opts) {
   const useUtf8 = opts.utf8 ?? true
   const charset = useUtf8 ? 'utf-8' : 'ascii'
   const authenticateHeader = getAuthenticateHeader(opts.authenticate, useUtf8)
-  const header = (opts.header && opts.header.toLowerCase()) || 'authorization'
+  const header = opts.header?.toLowerCase() || 'authorization'
 
   const credentialsRE = strictCredentials
     ? credentialsStrictRE
