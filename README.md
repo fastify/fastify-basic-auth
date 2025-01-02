@@ -4,7 +4,7 @@
 [![NPM version](https://img.shields.io/npm/v/@fastify/basic-auth.svg?style=flat)](https://www.npmjs.com/package/@fastify/basic-auth)
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 
- A simple basic auth plugin for Fastify.
+ A simple [Basic auth](https://datatracker.ietf.org/doc/html/rfc7617) plugin for Fastify.
 
  ## Install
 ```
@@ -120,12 +120,12 @@ On failed authentication, *@fastify/basic-auth* will call the Fastify
 handler](https://fastify.dev/docs/latest/Reference/Server/#seterrorhandler) with an error.
 *@fastify/basic-auth* sets the `err.statusCode` property to `401`.
 
-In order to properly `401` errors:
+To properly `401` errors:
 
 ```js
 fastify.setErrorHandler(function (err, req, reply) {
   if (err.statusCode === 401) {
-    // this was unauthorized! Display the correct page/message.
+    // This was unauthorized! Display the correct page/message
     reply.code(401).send({ was: 'unauthorized' })
     return
   }
@@ -138,7 +138,7 @@ fastify.setErrorHandler(function (err, req, reply) {
 ### `utf8` <Boolean> (optional, default: true)
 
 User-ids or passwords containing characters outside the US-ASCII
-character set will cause interoperability issues, unless both
+character set will cause interoperability issues unless both
 communication partners agree on what character encoding scheme is to
 be used. If utf8 is set to true the server will send the 'charset' parameter
 to indicate a preference of "UTF-8", increasing the probability that
@@ -147,17 +147,17 @@ clients will switch to that encoding.
 ### `strictCredentials` <Boolean> (optional, default: true)
 
 If strictCredentials is set to false the authorization header can contain
-additional whitespaces at the beginning, in the midde and at the end of the
+additional whitespaces at the beginning, middle, and end of the
 authorization header.
 This is a fallback option to ensure the same behavior as `@fastify/basic-auth`
 version <=5.x.
 
 ### `validate` <Function> (required)
 
-The `validate` function is called on each request made,
-and is passed the `username`, `password`, `req` and `reply`
-parameters in that order. An optional fifth parameter, `done` may be
-used to signify a valid request when called with no arguments,
+The `validate` function is called on each request made
+and is passed the `username`, `password`, `req`, and `reply`
+parameters, in that order. An optional fifth parameter, `done`, may be
+used to signify a valid request when called with no arguments
 or an invalid request when called with an `Error` object. Alternatively,
 the `validate` function may return a promise, resolving for valid
 requests and rejecting for invalid. This can also be achieved using
