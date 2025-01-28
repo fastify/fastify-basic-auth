@@ -30,8 +30,8 @@ declare namespace fastifyBasicAuth {
     ): void | Promise<void | Error>;
     authenticate?: boolean | { realm: string | ((req: FastifyRequest) => string) };
     header?: string;
-    strictCredentials?: boolean;
-    utf8?: boolean;
+    strictCredentials?: boolean | undefined;
+    utf8?: boolean | undefined;
   }
 
   export const fastifyBasicAuth: FastifyBasicAuth

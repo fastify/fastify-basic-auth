@@ -79,6 +79,12 @@ app.register(fastifyBasicAuth, {
   utf8: true
 })
 
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  strictCredentials: undefined,
+  utf8: undefined
+})
+
 expectAssignable<onRequestHookHandler>(app.basicAuth)
 expectAssignable<preValidationHookHandler>(app.basicAuth)
 expectAssignable<preHandlerHookHandler>(app.basicAuth)
