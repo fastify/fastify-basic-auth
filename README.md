@@ -26,7 +26,7 @@ in the table above.
 See [Fastify's LTS policy](https://github.com/fastify/fastify/blob/main/docs/Reference/LTS.md) for more details.
 
 ## Usage
-This plugin decorates the fastify instance with a `basicAuth` function, which you can use inside any hook before your route handler, or with [`@fastify/auth`](https://github.com/fastify/fastify-auth).
+This plugin decorates the fastify instance with a `basicAuth` function, which can be used inside any hook before a route handler, or with [`@fastify/auth`](https://github.com/fastify/fastify-auth).
 
 ```js
 const fastify = require('fastify')()
@@ -115,10 +115,10 @@ fastify.after(() => {
 
 ### Custom error handler
 
-On failed authentication, *@fastify/basic-auth* will call the Fastify
+On failed authentication, `@fastify/basic-auth` calls the Fastify
 [generic error
-handler](https://fastify.dev/docs/latest/Reference/Server/#seterrorhandler) with an error.
-*@fastify/basic-auth* sets the `err.statusCode` property to `401`.
+handler](https://fastify.dev/docs/latest/Reference/Server/#seterrorhandler) with an error
+and sets `err.statusCode` to `401`.
 
 To properly `401` errors:
 
@@ -137,18 +137,15 @@ fastify.setErrorHandler(function (err, req, reply) {
 
 ### `utf8` <Boolean> (optional, default: true)
 
-User-ids or passwords containing characters outside the US-ASCII
-character set will cause interoperability issues unless both
-communication partners agree on what character encoding scheme is to
-be used. If utf8 is set to true the server will send the 'charset' parameter
-to indicate a preference of "UTF-8", increasing the probability that
-clients will switch to that encoding.
+User-ids or passwords with non-US-ASCII characters may cause issues
+unless both parties agree on the encoding scheme. Setting `utf8` to
+true sends the 'charset' parameter to prefer "UTF-8", increasing the
+likelihood that clients will use that encoding.
 
 ### `strictCredentials` <Boolean> (optional, default: true)
 
-If strictCredentials is set to false the authorization header can contain
-additional whitespaces at the beginning, middle, and end of the
-authorization header.
+Setting `strictCredentials` to false allows additional whitespaces at
+the beginning, middle, and end of the authorization header.
 This is a fallback option to ensure the same behavior as `@fastify/basic-auth`
 version <=5.x.
 
@@ -156,10 +153,10 @@ version <=5.x.
 
 The `validate` function is called on each request made
 and is passed the `username`, `password`, `req`, and `reply`
-parameters, in that order. An optional fifth parameter, `done`, may be
+parameters, in that order. An optional fifth parameter, `done`, can be
 used to signify a valid request when called with no arguments
 or an invalid request when called with an `Error` object. Alternatively,
-the `validate` function may return a promise, resolving for valid
+the `validate` function can return a promise, resolving for valid
 requests and rejecting for invalid. This can also be achieved using
 an `async/await` function, and throwing for invalid requests.
 
@@ -167,12 +164,11 @@ See code above for examples.
 
 ### `authenticate` <Boolean|Object> (optional, default: false)
 
-When supplied, the `authenticate` option will cause the
-[`WWW-Authenticate` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) to be added. It may also be used to set the `realm` value.
+The `authenticate` option adds the [`WWW-Authenticate` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) and can set the `realm` value.
 
-This can be useful in situations where we want to trigger client-side authentication interfaces - for instance the browser authentication dialog.
+This can trigger client-side authentication interfaces, such as the browser authentication dialog.
 
-As a boolean setting `authenticate` to `true` will set a header like so: `WWW-Authenticate: Basic`. When `false`, no header is added. This is the default.
+Setting `authenticate` to `true` adds the header `WWW-Authenticate: Basic`. When `false`, no header is added (default).
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
@@ -186,8 +182,7 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
-When supplied as an object the `authenticate` option may have a `realm` key.
-
+The `authenticate` option can have a `realm` key when supplied as an object.
 If the `realm` key is supplied, it will be appended to the header value:
 
 ```js
@@ -197,7 +192,7 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
-The `realm` key could also be a function:
+The `realm` key can also be a function:
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
@@ -212,8 +207,7 @@ fastify.register(require('@fastify/basic-auth'), {
 
 ### `header` String (optional)
 
-When supplied, the header option is the name of the header to get
-credentials from for validation.
+The `header` option specifies the header name to get credentials from for validation.
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
