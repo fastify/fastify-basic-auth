@@ -82,7 +82,7 @@ app.register(fastifyBasicAuth, {
 app.register(fastifyBasicAuth, {
   validate: () => {},
   strictCredentials: undefined,
-  utf8: undefined,
+  utf8: undefined
 })
 
 expectAssignable<onRequestHookHandler>(app.basicAuth)
