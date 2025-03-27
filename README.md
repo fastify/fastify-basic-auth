@@ -14,9 +14,9 @@ npm i @fastify/basic-auth
 ### Compatibility
 | Plugin version | Fastify version |
 | ---------------|-----------------|
-| `^6.x`         | `^5.x`          |
+| `>=6.x`        | `^5.x`          |
 | `^4.x`         | `^4.x`          |
-| `^1.x`         | `^3.x`          |
+| `>=1.x <4.x`   | `^3.x`          |
 | `^0.x`         | `^2.x`          |
 | `^0.x`         | `^1.x`          |
 
