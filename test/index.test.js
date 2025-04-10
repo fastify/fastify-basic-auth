@@ -589,6 +589,102 @@ test('WWW-Authenticate Realm (authenticate: {realm: "example"}, utf8: true)', as
   t.assert.strictEqual(res2.statusCode, 200)
 })
 
+test('WWW-Authenticate Custom Header (authenticate: {realm: "example", header: "x-custom-authenticate" }, utf8: false)', async t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+  const authenticate = { realm: 'example', header: 'x-custom-authenticate' }
+  fastify.register(basicAuth, { validate, authenticate, utf8: false })
+
+  function validate (username, password, _req, _res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (_req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  const res1 = await fastify.inject({
+    url: '/',
+    method: 'GET'
+  })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['x-custom-authenticate'], 'Basic realm="example"')
+  t.assert.strictEqual(res1.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res1.statusCode, 401)
+
+  const res2 = await fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['x-custom-authenticate'], undefined)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
+})
+
+test('WWW-Authenticate Custom Header (authenticate: {realm: "example", header: "x-custom-authenticate" }, utf8: true)', async t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+  const authenticate = { realm: 'example', header: 'x-custom-authenticate' }
+  fastify.register(basicAuth, { validate, authenticate, utf8: true })
+
+  function validate (username, password, _req, _res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (_req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  const res1 = await fastify.inject({
+    url: '/',
+    method: 'GET'
+  })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['x-custom-authenticate'], 'Basic realm="example", charset="UTF-8"')
+  t.assert.strictEqual(res1.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res1.statusCode, 401)
+
+  const res2 = await fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  })
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['x-custom-authenticate'], undefined)
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 200)
+})
+
 test('Header option specified', async t => {
   t.plan(2)
 
