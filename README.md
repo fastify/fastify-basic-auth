@@ -205,6 +205,18 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
+The `authenticate` object can also have an optional `header` key allowing to customise the name of the header used instead of the default `WWW-Authenticate`:
+
+```js
+fastify.register(require('@fastify/basic-auth'), {
+  validate,
+  authenticate: {
+    header: 'Proxy-Authenticate' // Proxy-Authenticate: Basic
+  }
+})
+```
+
+
 ### `header` String (optional)
 
 The `header` option specifies the header name to get credentials from for validation.
