@@ -132,7 +132,7 @@ async function fastifyBasicAuth (fastify, opts) {
         if (err.statusCode === 401) {
           const header = authenticateHeader(req)
           if (header) {
-            reply.header('WWW-Authenticate', header)
+            reply.header(...header)
           }
         }
         next(err)
@@ -144,28 +144,30 @@ async function fastifyBasicAuth (fastify, opts) {
 }
 
 function getAuthenticateHeader (authenticate, useUtf8) {
+  const defaultHeaderName = 'WWW-Authenticate'
   if (!authenticate) return () => false
   if (authenticate === true) {
     return useUtf8
-      ? () => 'Basic charset="UTF-8"'
-      : () => 'Basic'
+      ? () => [defaultHeaderName, 'Basic charset="UTF-8"']
+      : () => [defaultHeaderName, 'Basic']
   }
   if (typeof authenticate === 'object') {
     const realm = authenticate.realm
+    const headerName = authenticate.header || defaultHeaderName
     switch (typeof realm) {
       case 'undefined':
       case 'boolean':
         return useUtf8
-          ? () => 'Basic charset="UTF-8"'
-          : () => 'Basic'
+          ? () => [headerName, 'Basic charset="UTF-8"']
+          : () => [headerName, 'Basic']
       case 'string':
         return useUtf8
-          ? () => `Basic realm="${realm}", charset="UTF-8"`
-          : () => `Basic realm="${realm}"`
+          ? () => [headerName, `Basic realm="${realm}", charset="UTF-8"`]
+          : () => [headerName, `Basic realm="${realm}"`]
       case 'function':
         return useUtf8
-          ? (req) => `Basic realm="${realm(req)}", charset="UTF-8"`
-          : (req) => `Basic realm="${realm(req)}"`
+          ? (req) => [headerName, `Basic realm="${realm(req)}", charset="UTF-8"`]
+          : (req) => [headerName, `Basic realm="${realm(req)}"`]
     }
   }
 

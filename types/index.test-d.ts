@@ -69,6 +69,12 @@ app.register(fastifyBasicAuth, {
   }
 })
 
+// authenticate with custom header
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  authenticate: { header: 'x-custom-authenticate' }
+})
+
 app.register(fastifyBasicAuth, {
   validate: () => {},
   strictCredentials: true
