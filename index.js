@@ -73,7 +73,7 @@ async function fastifyBasicAuth (fastify, opts) {
   const strictCredentials = opts.strictCredentials ?? true
   const useUtf8 = opts.utf8 ?? true
   const charset = useUtf8 ? 'utf-8' : 'ascii'
-  const authenticateHeader = getAuthenticateHeader(opts.authenticate, useUtf8)
+  const authenticateHeader = getAuthenticateHeaders(opts.authenticate, useUtf8)
   const header = opts.header?.toLowerCase() || 'authorization'
 
   const credentialsRE = strictCredentials
@@ -132,7 +132,7 @@ async function fastifyBasicAuth (fastify, opts) {
         if (err.statusCode === 401) {
           const header = authenticateHeader(req)
           if (header) {
-            reply.header(...header)
+            reply.header(header[0], header[1])
           }
         }
         next(err)
@@ -143,7 +143,7 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 }
 
-function getAuthenticateHeader (authenticate, useUtf8) {
+function getAuthenticateHeaders (authenticate, useUtf8) {
   const defaultHeaderName = 'WWW-Authenticate'
   if (!authenticate) return () => false
   if (authenticate === true) {
