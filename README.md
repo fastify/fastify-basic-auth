@@ -205,7 +205,7 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
-The `authenticate` object can also have an optional `header` key allowing to customise the name of the header used instead of the default `WWW-Authenticate`:
+The `authenticate` object can include an optional `header` key to customize the header name, replacing the default `WWW-Authenticate`:
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
