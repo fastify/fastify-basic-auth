@@ -28,7 +28,7 @@ declare namespace fastifyBasicAuth {
       reply: FastifyReply,
       done: (err?: Error) => void
     ): void | Promise<void | Error>;
-    authenticate?: boolean | { realm?: string | ((req: FastifyRequest) => string); header?: string };
+    authenticate?: boolean | { realm?: string | ((req: FastifyRequest) => string); header?: string; errorResponseCode?: number };
     header?: string;
     strictCredentials?: boolean | undefined;
     utf8?: boolean | undefined;
