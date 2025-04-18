@@ -69,10 +69,10 @@ app.register(fastifyBasicAuth, {
   }
 })
 
-// authenticate with custom header
+// authenticate with custom header and status code
 app.register(fastifyBasicAuth, {
   validate: () => {},
-  authenticate: { header: 'x-custom-authenticate' }
+  authenticate: { header: 'x-custom-authenticate', errorResponseCode: 400 }
 })
 
 app.register(fastifyBasicAuth, {
