@@ -205,12 +205,14 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
-The `authenticate` object can include an optional `header` key to customize the header name, replacing the default `WWW-Authenticate`:
+The `authenticate` object can include an optional `errorResponseCode` and `header` keys to customize the HTTP status code and the header name for authenticate responses, replacing the default `401` and `WWW-Authenticate`. This allows for example to implement proxy authentication if your application forwards the request to another server:
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
   validate,
+  header: 'Proxy-Authorization',
   authenticate: {
+    errorResponseCode: 407, // 407 Proxy Authentication Required
     header: 'Proxy-Authenticate' // Proxy-Authenticate: Basic
   }
 })
