@@ -170,11 +170,20 @@ This can trigger client-side authentication interfaces, such as the browser auth
 
 Setting `authenticate` to `true` adds the header `WWW-Authenticate: Basic`. When `false`, no header is added (default).
 
+When `proxyMode` is `true` it will the [`Proxy-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate) header instead
+
 ```js
 fastify.register(require('@fastify/basic-auth'), {
   validate,
   authenticate: true // WWW-Authenticate: Basic
 })
+
+fastify.register(require('@fastify/basic-auth'), {
+  validate,
+  proxymode: true,
+  authenticate: true // Proxy-Authenticate: Basic
+})
+
 
 fastify.register(require('@fastify/basic-auth'), {
   validate,
@@ -216,10 +225,17 @@ fastify.register(require('@fastify/basic-auth'), {
 })
 ```
 
+### `proxyMode` Boolean (optional, default: false)
+
+Setting the `proxyMode` to `true` will make the plugin implement [HTTP proxy authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Authentication#proxy_authentication), rather than resource authentication. In other words, the plugin will:
+
+- read credentials from the `Proxy-Authorization` header rather than `Authorization`
+- use `407` response status code instead of `401` to signal missing or invalid credentials
+- use the `Proxy-Authenticate` header rather than `WWW-Authenticate` if the `authenticate` option is set
 
 ### `header` String (optional)
 
-The `header` option specifies the header name to get credentials from for validation.
+The `header` option specifies the header name to get credentials from for validation. If not specified it defaults to `Authorization` or `Proxy-Authorization` (according to the value of `proxyMode` option)
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
