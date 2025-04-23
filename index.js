@@ -67,9 +67,9 @@ async function fastifyBasicAuth (fastify, opts) {
   const strictCredentials = opts.strictCredentials ?? true
   const useUtf8 = opts.utf8 ?? true
   const charset = useUtf8 ? 'utf-8' : 'ascii'
-  const authenticateHeader = getAuthenticateHeaders(opts.authenticate, useUtf8)
-  const header = opts.header?.toLowerCase() || 'authorization'
-  const errorResponseCode = opts.authenticate?.errorResponseCode || 401
+  const authenticateHeader = getAuthenticateHeaders(opts.authenticate, useUtf8, opts.proxyMode)
+  const header = opts.header?.toLowerCase() || (opts.proxyMode ? 'proxy-authorization' : 'authorization')
+  const errorResponseCode = opts.proxyMode ? 407 : 401
 
   const MissingOrBadAuthorizationHeader = createError(
     'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
@@ -144,8 +144,8 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 }
 
-function getAuthenticateHeaders (authenticate, useUtf8) {
-  const defaultHeaderName = 'WWW-Authenticate'
+function getAuthenticateHeaders (authenticate, useUtf8, proxyMode) {
+  const defaultHeaderName = proxyMode ? 'Proxy-Authenticate' : 'WWW-Authenticate'
   if (!authenticate) return () => false
   if (authenticate === true) {
     return useUtf8

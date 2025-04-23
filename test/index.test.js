@@ -685,12 +685,12 @@ test('WWW-Authenticate Custom Header (authenticate: {realm: "example", header: "
   t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('Proxy authentication (header: Proxy-Authorization, authenticate: {realm: "example", header: "Proxy-Authenticate", errorResponseCode: 407 }, utf8: true)', async t => {
+test('Proxy authentication (proxyMode: true, authenticate: true, utf8: true)', async t => {
   t.plan(12)
 
   const fastify = Fastify()
-  const authenticate = { realm: 'example', header: 'Proxy-Authenticate', errorResponseCode: 407 }
-  fastify.register(basicAuth, { validate, authenticate, utf8: true, header: 'Proxy-Authorization' })
+  const authenticate = { realm: 'example' }
+  fastify.register(basicAuth, { validate, authenticate, utf8: true, proxyMode: true })
 
   function validate (username, password, _req, _res, done) {
     if (username === 'user' && password === 'pwd') {
