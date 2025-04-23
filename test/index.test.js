@@ -685,7 +685,7 @@ test('WWW-Authenticate Custom Header (authenticate: {realm: "example", header: "
   t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('Proxy authentication (proxyMode: true, authenticate: true, utf8: true)', async t => {
+test('Proxy authentication (proxyMode: true, authenticate: { realm: 'example' }, utf8: true)', async t => {
   t.plan(12)
 
   const fastify = Fastify()

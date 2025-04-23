@@ -170,7 +170,7 @@ This can trigger client-side authentication interfaces, such as the browser auth
 
 Setting `authenticate` to `true` adds the header `WWW-Authenticate: Basic`. When `false`, no header is added (default).
 
-When `proxyMode` is `true` it will the [`Proxy-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate) header instead
+When `proxyMode` is `true` it will use the [`Proxy-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate) header instead
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
@@ -183,7 +183,6 @@ fastify.register(require('@fastify/basic-auth'), {
   proxymode: true,
   authenticate: true // Proxy-Authenticate: Basic
 })
-
 
 fastify.register(require('@fastify/basic-auth'), {
   validate,
