@@ -180,7 +180,7 @@ fastify.register(require('@fastify/basic-auth'), {
 
 fastify.register(require('@fastify/basic-auth'), {
   validate,
-  proxymode: true,
+  proxyMode: true,
   authenticate: true // Proxy-Authenticate: Basic
 })
 
