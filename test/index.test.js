@@ -685,6 +685,68 @@ test('WWW-Authenticate Custom Header (authenticate: {realm: "example", header: "
   t.assert.strictEqual(res2.statusCode, 200)
 })
 
+test("Proxy authentication (proxyMode: true, authenticate: { realm: 'example' }, utf8: true)", async t => {
+  t.plan(12)
+
+  const fastify = Fastify()
+  const authenticate = { realm: 'example' }
+  fastify.register(basicAuth, { validate, authenticate, utf8: true, proxyMode: true })
+
+  function validate (username, password, _req, _res, done) {
+    if (username === 'user' && password === 'pwd') {
+      done()
+    } else {
+      done(new Error('Unauthorized'))
+    }
+  }
+
+  fastify.after(() => {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      preHandler: fastify.basicAuth,
+      handler: (_req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+
+  const res1 = await fastify.inject({
+    url: '/',
+    method: 'GET'
+  })
+  t.assert.ok(res1.body)
+  t.assert.strictEqual(res1.headers['proxy-authenticate'], 'Basic realm="example", charset="UTF-8"')
+  t.assert.strictEqual(res1.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res1.statusCode, 407)
+
+  const res2 = await fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      authorization: basicAuthHeader('user', 'pwd')
+    }
+  })
+
+  t.assert.ok(res2.body)
+  t.assert.strictEqual(res2.headers['proxy-authenticate'], 'Basic realm="example", charset="UTF-8"')
+  t.assert.strictEqual(res2.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res2.statusCode, 407)
+
+  const res3 = await fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      'proxy-authorization': basicAuthHeader('user', 'pwd')
+    }
+  })
+
+  t.assert.ok(res3.body)
+  t.assert.strictEqual(res3.headers['proxy-authenticate'], undefined)
+  t.assert.strictEqual(res3.headers['www-authenticate'], undefined)
+  t.assert.strictEqual(res3.statusCode, 200)
+})
+
 test('Header option specified', async t => {
   t.plan(2)
 

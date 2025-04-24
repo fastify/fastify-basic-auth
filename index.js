@@ -3,12 +3,6 @@
 const fp = require('fastify-plugin')
 const createError = require('@fastify/error')
 
-const MissingOrBadAuthorizationHeader = createError(
-  'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
-  'Missing or bad formatted authorization header',
-  401
-)
-
 /**
  * HTTP provides a simple challenge-response authentication framework
  * that can be used by a server to challenge a client request and by a
@@ -73,8 +67,15 @@ async function fastifyBasicAuth (fastify, opts) {
   const strictCredentials = opts.strictCredentials ?? true
   const useUtf8 = opts.utf8 ?? true
   const charset = useUtf8 ? 'utf-8' : 'ascii'
-  const authenticateHeader = getAuthenticateHeaders(opts.authenticate, useUtf8)
-  const header = opts.header?.toLowerCase() || 'authorization'
+  const authenticateHeader = getAuthenticateHeaders(opts.authenticate, useUtf8, opts.proxyMode)
+  const header = opts.header?.toLowerCase() || (opts.proxyMode ? 'proxy-authorization' : 'authorization')
+  const errorResponseCode = opts.proxyMode ? 407 : 401
+
+  const MissingOrBadAuthorizationHeader = createError(
+    'FST_BASIC_AUTH_MISSING_OR_BAD_AUTHORIZATION_HEADER',
+    'Missing or bad formatted authorization header',
+    errorResponseCode
+  )
 
   const credentialsRE = strictCredentials
     ? credentialsStrictRE
@@ -124,12 +125,12 @@ async function fastifyBasicAuth (fastify, opts) {
 
     function done (err) {
       if (err !== undefined) {
-        // We set the status code to be 401 if it is not set
+        // We set the status code to be `errorResponseCode` (normally 401) if it is not set
         if (!err.statusCode) {
-          err.statusCode = 401
+          err.statusCode = errorResponseCode
         }
 
-        if (err.statusCode === 401) {
+        if (err.statusCode === errorResponseCode) {
           const header = authenticateHeader(req)
           if (header) {
             reply.header(header[0], header[1])
@@ -143,8 +144,8 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 }
 
-function getAuthenticateHeaders (authenticate, useUtf8) {
-  const defaultHeaderName = 'WWW-Authenticate'
+function getAuthenticateHeaders (authenticate, useUtf8, proxyMode) {
+  const defaultHeaderName = proxyMode ? 'Proxy-Authenticate' : 'WWW-Authenticate'
   if (!authenticate) return () => false
   if (authenticate === true) {
     return useUtf8

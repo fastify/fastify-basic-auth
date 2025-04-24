@@ -75,6 +75,13 @@ app.register(fastifyBasicAuth, {
   authenticate: { header: 'x-custom-authenticate' }
 })
 
+// authenticate in proxy mode
+app.register(fastifyBasicAuth, {
+  validate: () => {},
+  proxyMode: true,
+  authenticate: true,
+})
+
 app.register(fastifyBasicAuth, {
   validate: () => {},
   strictCredentials: true
