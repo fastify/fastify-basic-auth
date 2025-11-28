@@ -3,6 +3,8 @@
 const fp = require('fastify-plugin')
 const createError = require('@fastify/error')
 
+/** @typedef {import('./types/index').FastifyBasicAuthOptions} FastifyBasicAuthOptions */
+
 /**
  * HTTP provides a simple challenge-response authentication framework
  * that can be used by a server to challenge a client request and by a
@@ -59,6 +61,7 @@ const controlRE = /[\x00-\x1F\x7F]/
 
 const userPassRE = /^([^:]*):(.*)$/
 
+/** @type {typeof import('./types/index').fastifyBasicAuth} */
 async function fastifyBasicAuth (fastify, opts) {
   if (typeof opts.validate !== 'function') {
     throw new Error('Basic Auth: Missing validate function')
@@ -144,6 +147,13 @@ async function fastifyBasicAuth (fastify, opts) {
   }
 }
 
+/**
+ * Generates a function that returns the appropriate authentication header.
+ * @param {FastifyBasicAuthOptions['authenticate']} authenticate - The authenticate option.
+ * @param {FastifyBasicAuthOptions['utf8']} useUtf8 - Whether to use UTF-8 charset.
+ * @param {FastifyBasicAuthOptions['proxyMode']} proxyMode - Whether in proxy mode.
+ * @returns {(req: import('fastify').FastifyRequest) => false | [string, string]} Function that returns header tuple or false.
+ */
 function getAuthenticateHeaders (authenticate, useUtf8, proxyMode) {
   const defaultHeaderName = proxyMode ? 'Proxy-Authenticate' : 'WWW-Authenticate'
   if (!authenticate) return () => false
