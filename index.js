@@ -18,7 +18,7 @@ const createError = require('@fastify/error')
  * The scheme name is "Basic".
  * @see https://datatracker.ietf.org/doc/html/rfc7617#section-2
  */
-const authScheme = '(?:basic)'
+const authScheme = 'basic'
 /**
  * The BWS rule is used where the grammar allows optional whitespace
  * only for historical reasons.  A sender MUST NOT generate BWS in
