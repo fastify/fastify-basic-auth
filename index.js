@@ -41,15 +41,15 @@ const token68 = '([\\w.~+/-]+=*)'
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc7235#appendix-C
  */
-const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`, 'i')
+const credentialsStrictRE = new RegExp(`^${authScheme} ${token68}$`, 'iu')
 
-const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS}*$`, 'i')
+const credentialsLaxRE = new RegExp(`^${BWS}*${authScheme}${BWS}+${token68}${BWS}*$`, 'iu')
 
 /**
  * @see https://datatracker.ietf.org/doc/html/rfc5234#appendix-B.1
  */
 // eslint-disable-next-line no-control-regex
-const controlRE = /[\x00-\x1F\x7F]/
+const controlRE = /[\x00-\x1F\x7F]/u
 
 /**
  * RegExp for basic auth user/pass
@@ -59,7 +59,7 @@ const controlRE = /[\x00-\x1F\x7F]/
  * password    = *TEXT
  */
 
-const userPassRE = /^([^:]*):(.*)$/
+const userPassRE = /^([^:]*):(.*)$/u
 
 /** @type {typeof import('./types/index').fastifyBasicAuth} */
 async function fastifyBasicAuth (fastify, opts) {
