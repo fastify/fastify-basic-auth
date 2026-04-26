@@ -98,6 +98,6 @@ app.register(fastifyBasicAuth, {
   utf8: undefined
 })
 
-expect(app.basicAuth).type.toBeAssignableTo<onRequestHookHandler>()
-expect(app.basicAuth).type.toBeAssignableTo<preValidationHookHandler>()
-expect(app.basicAuth).type.toBeAssignableTo<preHandlerHookHandler>()
+expect(app.basicAuth).type.toBe<onRequestHookHandler>()
+expect(app.basicAuth).type.toBe<preValidationHookHandler>()
+expect(app.basicAuth).type.toBe<preHandlerHookHandler>()
