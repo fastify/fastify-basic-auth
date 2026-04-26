@@ -71,11 +71,6 @@
     "@fastify/error": "^4.0.0",
     "fastify-plugin": "^5.0.0"
   },
-  "tstyche": {
-    "testFileMatch": [
-      "types/*.tst.ts"
-    ]
-  },
   "publishConfig": {
     "access": "public"
   }
