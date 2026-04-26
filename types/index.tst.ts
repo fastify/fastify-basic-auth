@@ -1,4 +1,4 @@
-import { expectType, expectAssignable } from 'tsd'
+import { expect } from 'tstyche'
 import fastify, {
   FastifyRequest,
   FastifyReply,
@@ -14,11 +14,11 @@ const app = fastify()
 // validation ok
 app.register(fastifyBasicAuth, {
   validate: async function validatePromise (username, password, req, reply) {
-    expectType<string>(username)
-    expectType<string>(password)
-    expectType<FastifyRequest>(req)
-    expectType<FastifyReply>(reply)
-    expectType<FastifyInstance>(this)
+    expect(username).type.toBe<string>()
+    expect(password).type.toBe<string>()
+    expect(req).type.toBe<FastifyRequest>()
+    expect(reply).type.toBe<FastifyReply>()
+    expect(this).type.toBe<FastifyInstance>()
   },
   header: 'x-forwarded-authorization'
 })
@@ -26,11 +26,11 @@ app.register(fastifyBasicAuth, {
 // validation failure
 app.register(fastifyBasicAuth, {
   validate: async function validatePromise (username, password, req, reply) {
-    expectType<string>(username)
-    expectType<string>(password)
-    expectType<FastifyRequest>(req)
-    expectType<FastifyReply>(reply)
-    expectType<FastifyInstance>(this)
+    expect(username).type.toBe<string>()
+    expect(password).type.toBe<string>()
+    expect(req).type.toBe<FastifyRequest>()
+    expect(reply).type.toBe<FastifyReply>()
+    expect(this).type.toBe<FastifyInstance>()
     return new Error('unauthorized')
   },
   header: 'x-forwarded-authorization'
@@ -38,12 +38,12 @@ app.register(fastifyBasicAuth, {
 
 app.register(fastifyBasicAuth, {
   validate: function validateCallback (username, password, req, reply, done) {
-    expectType<string>(username)
-    expectType<string>(password)
-    expectType<FastifyRequest>(req)
-    expectType<FastifyReply>(reply)
-    expectAssignable<(err?: Error) => void>(done)
-    expectType<FastifyInstance>(this)
+    expect(username).type.toBe<string>()
+    expect(password).type.toBe<string>()
+    expect(req).type.toBe<FastifyRequest>()
+    expect(reply).type.toBe<FastifyReply>()
+    expect(done).type.toBe<(err?: Error) => void>()
+    expect(this).type.toBe<FastifyInstance>()
   }
 })
 
@@ -98,6 +98,6 @@ app.register(fastifyBasicAuth, {
   utf8: undefined
 })
 
-expectAssignable<onRequestHookHandler>(app.basicAuth)
-expectAssignable<preValidationHookHandler>(app.basicAuth)
-expectAssignable<preHandlerHookHandler>(app.basicAuth)
+expect(app.basicAuth).type.toBe<onRequestHookHandler>()
+expect(app.basicAuth).type.toBe<preValidationHookHandler>()
+expect(app.basicAuth).type.toBe<preHandlerHookHandler>()
