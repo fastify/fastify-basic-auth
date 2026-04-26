@@ -42,7 +42,7 @@ app.register(fastifyBasicAuth, {
     expect(password).type.toBe<string>()
     expect(req).type.toBe<FastifyRequest>()
     expect(reply).type.toBe<FastifyReply>()
-    expect(done).type.toBeAssignableTo<(err?: Error) => void>()
+    expect(done).type.toBe<(err?: Error) => void>()
     expect(this).type.toBe<FastifyInstance>()
   }
 })
