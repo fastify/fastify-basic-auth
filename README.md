@@ -164,13 +164,13 @@ See code above for examples.
 
 ### `authenticate` <Boolean|Object> (optional, default: false)
 
-The `authenticate` option adds the [`WWW-Authenticate` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) and can set the `realm` value.
+The `authenticate` option adds the [`WWW-Authenticate` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/WWW-Authenticate) and can set the `realm` value.
 
 This can trigger client-side authentication interfaces, such as the browser authentication dialog.
 
 Setting `authenticate` to `true` adds the header `WWW-Authenticate: Basic`. When `false`, no header is added (default).
 
-When `proxyMode` is `true` it will use the [`Proxy-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate) header instead.
+When `proxyMode` is `true` it will use the [`Proxy-Authenticate`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Proxy-Authenticate) header instead.
 
 ```js
 fastify.register(require('@fastify/basic-auth'), {
